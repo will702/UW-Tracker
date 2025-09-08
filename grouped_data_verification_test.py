@@ -94,7 +94,7 @@ class GroupedDataVerificationTester:
                         break
                 
                 if goto_record:
-                    underwriters = goto_record.get("uw", [])
+                    underwriters = goto_record.get("underwriters", [])
                     if isinstance(underwriters, list) and len(underwriters) == 13:
                         self.log_test("GOTO 13 Underwriters", True, 
                                     f"GOTO has exactly 13 underwriters: {underwriters}")
