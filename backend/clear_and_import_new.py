@@ -55,7 +55,7 @@ async def clear_and_import_data():
         
         logger.info(f"Loaded {len(data)} records from JSON file")
         
-        # Step 3: Process and prepare data for insertion
+        # Step 4: Process and prepare data for insertion (handle duplicates)
         processed_records = []
         current_time = datetime.utcnow()
         
