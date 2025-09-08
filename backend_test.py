@@ -228,8 +228,14 @@ class UWTrackerAPITester:
                     self.log_test("POST /uw-data - Duplicate Prevention", False, 
                                 f"Should have rejected duplicate, got status: {response2.status_code}")
             else:
+                error_detail = ""
+                try:
+                    error_data = response1.json()
+                    error_detail = error_data.get("detail", "")
+                except:
+                    error_detail = response1.text
                 self.log_test("POST /uw-data - Duplicate Prevention", False, 
-                            f"Failed to create initial record: {response1.status_code}")
+                            f"Failed to create initial record: {response1.status_code}, Error: {error_detail}")
         except Exception as e:
             self.log_test("POST /uw-data - Duplicate Prevention", False, f"Error: {str(e)}")
     
