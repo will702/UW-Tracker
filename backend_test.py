@@ -248,7 +248,7 @@ class UWTrackerAPITester:
         for invalid_data, test_desc in invalid_tests:
             try:
                 response = self.session.post(
-                    f"{self.base_url}/uw-data",
+                    f"{self.base_url}/uw-data/",
                     json=invalid_data,
                     headers={"Content-Type": "application/json"}
                 )
