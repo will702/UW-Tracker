@@ -67,7 +67,7 @@ def analyze_original_json():
         
         # Show some examples with different return values
         logger.info(f"\nChecking if multiple UWs have different return values:")
-        for code, uws in list(sorted_multi.items())[:3]:
+        for code, uws in sorted_multi[:3]:
             logger.info(f"\n{code} - {uws[0]['companyName']}:")
             for uw in uws:
                 returns = f"D+1:{uw.get('returnD1', 'N/A')}, D+2:{uw.get('returnD2', 'N/A')}, D+3:{uw.get('returnD3', 'N/A')}"
