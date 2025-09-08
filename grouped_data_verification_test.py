@@ -128,7 +128,7 @@ class GroupedDataVerificationTester:
                     grouped_structure_valid = True
                     
                     for record in sample_records:
-                        uw_field = record.get("uw", [])
+                        uw_field = record.get("underwriters", [])
                         if not isinstance(uw_field, list):
                             grouped_structure_valid = False
                             break
