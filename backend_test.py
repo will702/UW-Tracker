@@ -202,7 +202,7 @@ class UWTrackerAPITester:
             
             # Create first record
             response1 = self.session.post(
-                f"{self.base_url}/uw-data",
+                f"{self.base_url}/uw-data/",
                 json=test_data,
                 headers={"Content-Type": "application/json"}
             )
@@ -214,7 +214,7 @@ class UWTrackerAPITester:
                 
                 # Try to create duplicate
                 response2 = self.session.post(
-                    f"{self.base_url}/uw-data",
+                    f"{self.base_url}/uw-data/",
                     json=test_data,
                     headers={"Content-Type": "application/json"}
                 )
