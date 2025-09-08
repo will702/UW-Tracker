@@ -333,6 +333,90 @@ backend:
         agent: "testing"
         comment: "Statistics endpoint correctly updates after create/delete operations. Verified stats change from 233 -> 234 -> 233 during test record lifecycle. Real-time statistics working properly."
 
+  - task: "Grouped Data Structure - 233 Records"
+    implemented: true
+    working: true
+    file: "/app/backend/services/uw_service_grouped.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Verified database contains exactly 233 records with proper grouped underwriter structure. Sample records show underwriters as arrays instead of single strings."
+
+  - task: "GOTO Multiple Underwriters Verification"
+    implemented: true
+    working: true
+    file: "/app/backend/models/uw_record_grouped.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "GOTO record confirmed to have exactly 13 underwriters: ['AZ', 'C3', 'CC', 'CP', 'CS', 'D4', 'GR', 'KZ', 'LG', 'NI', 'PD', 'PP', 'RO']. Grouped structure working as expected."
+
+  - task: "GET /api/uw-data/simple - Grouped Structure"
+    implemented: true
+    working: true
+    file: "/app/backend/routers/uw_router_grouped.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Simple endpoint working perfectly with grouped structure. Returns proper data/count/total fields. All records have underwriters as arrays. Total count correctly shows 233 records."
+
+  - task: "GET /api/uw-data/stats - Aggregated UW Count"
+    implemented: true
+    working: true
+    file: "/app/backend/routers/uw_router_grouped.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Stats endpoint correctly uses aggregation to count unique underwriters. Reports 63 unique UW firms across 233 records. Aggregation pipeline working correctly to flatten underwriter arrays."
+
+  - task: "Search Functionality - Multiple Underwriters"
+    implemented: true
+    working: true
+    file: "/app/backend/services/uw_service_grouped.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Search functionality works correctly with grouped structure. Successfully searches within underwriter arrays (e.g., 'AZ' finds 10 records), stock codes ('GOTO' finds 1 record), and company names. Case-insensitive search working."
+
+  - task: "DELETE /api/uw-data/{id} - Grouped Records"
+    implemented: true
+    working: true
+    file: "/app/backend/routers/uw_router_grouped.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Delete functionality works correctly with grouped structure. Successfully created test record with multiple UWs ['TEST1', 'TEST2', 'TEST3'], deleted it, and verified deletion. No issues with grouped data structure."
+
+  - task: "Data Integrity - Grouped Structure"
+    implemented: true
+    working: true
+    file: "/app/backend/models/uw_record_grouped.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Data integrity verified across sample records. All records have valid grouped structure with underwriters as arrays. Average 1.8 UWs per record. Structure properly handles both single and multiple underwriters per stock."
+
 frontend:
   # Frontend testing not performed as per instructions
 
