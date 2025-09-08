@@ -57,8 +57,12 @@ class UWService:
             # Convert to UWRecord objects
             uw_records = []
             for record in records:
-                record["_id"] = str(record["_id"])
-                uw_records.append(UWRecord(**record))
+                try:
+                    record["_id"] = str(record["_id"])
+                    uw_records.append(UWRecord(**record))
+                except Exception as e:
+                    logger.warning(f"Error processing record {record.get('code', 'unknown')}: {e}")
+                    continue
 
             return UWDataResponse(
                 data=uw_records,
