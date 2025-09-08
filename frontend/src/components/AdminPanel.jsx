@@ -145,7 +145,7 @@ const AdminPanel = () => {
     setIsLoading(true);
     try {
       const recordData = {
-        uw: formData.uw.toUpperCase(),
+        underwriters: formData.underwriters.split(',').map(uw => uw.trim().toUpperCase()).filter(uw => uw),
         code: formData.code.toUpperCase(),
         companyName: formData.companyName,
         ipoPrice: parseFloat(formData.ipoPrice),
