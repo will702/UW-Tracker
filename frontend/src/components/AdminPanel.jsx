@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from 'react';
-import { Plus, Upload, Download, Save, X, AlertCircle, CheckCircle } from 'lucide-react';
+import React, { useState, useCallback, useEffect } from 'react';
+import { Plus, Upload, Download, Save, X, AlertCircle, CheckCircle, Trash2, Search, Eye } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
