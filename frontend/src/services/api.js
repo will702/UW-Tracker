@@ -44,7 +44,7 @@ export const uwAPI = {
       const params = { limit, offset };
       if (search) params.search = search;
       
-      const response = await apiClient.get('/uw-data/', { params });
+      const response = await apiClient.get('/uw-data', { params });
       return response.data;
     } catch (error) {
       throw new Error(`Failed to fetch UW records: ${error.message}`);
