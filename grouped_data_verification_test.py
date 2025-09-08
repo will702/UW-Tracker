@@ -218,7 +218,7 @@ class GroupedDataVerificationTester:
         try:
             # Create a test record with multiple underwriters
             test_data = {
-                "uw": ["TEST1", "TEST2", "TEST3"],
+                "underwriters": ["TEST1", "TEST2", "TEST3"],
                 "code": f"DELTEST{str(uuid.uuid4())[:4].upper()}",
                 "companyName": "PT Delete Test Multiple UW Tbk",
                 "ipoPrice": 1500.0,
