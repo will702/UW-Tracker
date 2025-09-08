@@ -417,6 +417,18 @@ backend:
         agent: "testing"
         comment: "Data integrity verified across sample records. All records have valid grouped structure with underwriters as arrays. Average 1.8 UWs per record. Structure properly handles both single and multiple underwriters per stock."
 
+  - task: "Regular Endpoint Validation Issue"
+    implemented: true
+    working: false
+    file: "/app/backend/routers/uw_router_grouped.py"
+    stuck_count: 0
+    priority: "low"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "Minor: Regular /api/uw-data endpoint fails Pydantic validation due to some records having null listingBoard values. /api/uw-data/simple endpoint works perfectly as it bypasses strict validation. This is a data quality issue, not a functional problem with grouped structure."
+
 frontend:
   # Frontend testing not performed as per instructions
 
