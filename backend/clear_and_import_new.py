@@ -42,7 +42,7 @@ async def clear_and_import_data():
         delete_result = await collection.delete_many({})
         logger.info(f"Deleted {delete_result.deleted_count} existing records")
         
-        # Step 2: Load new data from JSON file
+        # Step 3: Load new data from JSON file
         json_file_path = '/app/new_uw_bulk_upload.json'
         
         if not os.path.exists(json_file_path):
