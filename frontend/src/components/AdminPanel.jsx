@@ -120,7 +120,7 @@ const AdminPanel = () => {
 
   // Validate form data
   const validateForm = () => {
-    const required = ['uw', 'code', 'companyName', 'ipoPrice', 'listingBoard', 'listingDate'];
+    const required = ['underwriters', 'code', 'companyName', 'ipoPrice', 'listingBoard', 'listingDate'];
     const missing = required.filter(field => !formData[field]);
     
     if (missing.length > 0) {
