@@ -26,7 +26,34 @@ def set_uw_service(service: UWService):
 
 router = APIRouter(prefix="/uw-data", tags=["UW Records"])
 
-@router.get("/debug", response_model=dict)
+@router.get("/simple")
+async def get_simple_records(
+    limit: int = Query(10, ge=1, le=100),
+    service: UWService = Depends(get_uw_service)
+):
+    """Get simple records without Pydantic validation"""
+    try:
+        records = await service.collection.find({}).limit(limit).to_list(length=limit)
+        result = []
+        for record in records:
+            record["_id"] = str(record["_id"])
+            # Convert datetime to string for JSON serialization
+            if "listingDate" in record:
+                record["listingDate"] = record["listingDate"].isoformat()
+            if "createdAt" in record:
+                record["createdAt"] = record["createdAt"].isoformat()
+            if "updatedAt" in record:
+                record["updatedAt"] = record["updatedAt"].isoformat()
+            result.append(record)
+        
+        return {
+            "data": result,
+            "count": len(result),
+            "total": await service.collection.count_documents({})
+        }
+    except Exception as e:
+        logger.error(f"Error in simple endpoint: {e}")
+        return {"error": str(e), "data": [], "count": 0, "total": 0}
 async def debug_endpoint(
     service: UWService = Depends(get_uw_service)
 ):
