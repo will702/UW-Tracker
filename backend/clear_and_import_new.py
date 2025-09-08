@@ -108,6 +108,12 @@ async def clear_and_import_data():
             logger.info("Sample records:")
             for i, record in enumerate(sample_records, 1):
                 logger.info(f"  {i}. {record.get('uw')} - {record.get('code')} - {record.get('companyName')}")
+                
+            # Recreate indexes (without unique constraint for now)
+            logger.info("Recreating indexes...")
+            await collection.create_index([("uw", 1)])
+            await collection.create_index([("listingDate", 1)])
+            logger.info("Indexes recreated successfully")
         
         else:
             logger.warning("No records to insert")
