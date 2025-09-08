@@ -41,10 +41,11 @@ export const uwAPI = {
   // Get all UW records with optional search and pagination
   getAllRecords: async (search = '', limit = 100, offset = 0) => {
     try {
-      const params = { limit, offset };
+      const params = { limit };
       if (search) params.search = search;
       
-      const response = await apiClient.get('/uw-data', { params });
+      // Temporarily use simple endpoint
+      const response = await apiClient.get('/uw-data/simple', { params });
       return response.data;
     } catch (error) {
       throw new Error(`Failed to fetch UW records: ${error.message}`);
