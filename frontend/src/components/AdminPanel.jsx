@@ -502,8 +502,150 @@ const AdminPanel = () => {
           </CardContent>
         </Card>
       )}
+
+      {/* Data Management */}
+      {isManagingData && (
+        <Card>
+          <CardHeader>
+            <div className="flex justify-between items-center">
+              <CardTitle>Kelola Data UW Records</CardTitle>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => setIsManagingData(false)}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {/* Search */}
+            <div className="mb-6">
+              <div className="relative max-w-md">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Input
+                  type="text"
+                  placeholder="Cari berdasarkan UW, kode, atau nama perusahaan"
+                  value={searchTerm}
+                  onChange={(e) => handleSearch(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              <p className="text-sm text-gray-500 mt-2">
+                Menampilkan {displayedCount} record
+              </p>
+            </div>
+
+            {/* Data Table */}
+            {isLoading ? (
+              <div className="text-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+                <p className="text-gray-600">Loading data...</p>
+              </div>
+            ) : uwData.length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-gray-500">
+                  {searchTerm ? 'Tidak ada data yang sesuai dengan pencarian' : 'Tidak ada data yang tersedia'}
+                </p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-gray-50">
+                      <TableHead className="font-semibold text-gray-900">UW</TableHead>
+                      <TableHead className="font-semibold text-gray-900">Kode</TableHead>
+                      <TableHead className="font-semibold text-gray-900">Nama Perusahaan</TableHead>
+                      <TableHead className="font-semibold text-gray-900">Harga IPO</TableHead>
+                      <TableHead className="font-semibold text-gray-900">Papan</TableHead>
+                      <TableHead className="font-semibold text-gray-900">Tanggal</TableHead>
+                      <TableHead className="font-semibold text-gray-900">Record</TableHead>
+                      <TableHead className="font-semibold text-gray-900">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {uwData.map((item) => (
+                      <TableRow key={item._id} className="hover:bg-gray-50">
+                        <TableCell className="font-medium text-indigo-600">{item.uw}</TableCell>
+                        <TableCell className="font-medium">{item.code}</TableCell>
+                        <TableCell className="max-w-xs">
+                          <div className="truncate" title={item.companyName}>
+                            {item.companyName}
+                          </div>
+                        </TableCell>
+                        <TableCell className="font-medium">{formatPrice(item.ipoPrice)}</TableCell>
+                        <TableCell>
+                          <Badge className={getBoardBadgeColor(item.listingBoard)}>
+                            {item.listingBoard}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-sm text-gray-600">
+                          {formatDate(item.listingDate)}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className="font-medium">
+                            {item.record || '-'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button 
+                                variant="ghost" 
+                                size="sm"
+                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Konfirmasi Penghapusan</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Apakah Anda yakin ingin menghapus record ini?
+                                  <br />
+                                  <strong>{item.uw} - {item.code} ({item.companyName})</strong>
+                                  <br />
+                                  Tindakan ini tidak dapat dibatalkan.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Batal</AlertDialogCancel>
+                                <AlertDialogAction 
+                                  onClick={() => handleDeleteRecord(item._id)}
+                                  className="bg-red-600 hover:bg-red-700"
+                                >
+                                  Hapus
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
+
+  // Utility function for board badge colors
+  function getBoardBadgeColor(board) {
+    switch (board) {
+      case 'Utama':
+        return 'bg-blue-100 text-blue-800';
+      case 'Pengembangan':
+        return 'bg-green-100 text-green-800';
+      case 'Akselerasi':
+        return 'bg-purple-100 text-purple-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  }
 };
 
 export default AdminPanel;
