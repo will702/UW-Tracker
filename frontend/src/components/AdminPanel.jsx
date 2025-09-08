@@ -32,6 +32,11 @@ import { uwAPI, formatReturn, formatPrice, formatDate } from '../services/api';
 const AdminPanel = () => {
   const [isAddingRecord, setIsAddingRecord] = useState(false);
   const [isBulkUploading, setIsBulkUploading] = useState(false);
+  const [isManagingData, setIsManagingData] = useState(false);
+  const [uwData, setUwData] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [deleteRecordId, setDeleteRecordId] = useState(null);
+  const [displayedCount, setDisplayedCount] = useState(0);
   const [formData, setFormData] = useState({
     uw: '',
     code: '',
