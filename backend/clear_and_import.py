@@ -15,7 +15,7 @@ async def clear_and_import_new_data():
     try:
         # Connect to MongoDB
         mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
-        db_name = os.environ.get('DB_NAME', 'uw_tracker')
+        db_name = os.environ.get('DB_NAME', 'test_database')  # Use same as backend
         
         client = AsyncIOMotorClient(mongo_url)
         db = client[db_name]
