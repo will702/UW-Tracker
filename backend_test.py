@@ -13,7 +13,7 @@ import sys
 import os
 
 # Backend URL from environment
-BACKEND_URL = "https://ipo-underwriter.preview.emergentagent.com/api"
+BACKEND_URL = "https://ipo-tracker-2.preview.emergentagent.com/api"
 
 class UWTrackerAPITester:
     def __init__(self):
