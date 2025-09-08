@@ -57,7 +57,9 @@ async def clear_and_import_data():
         
         # Step 4: Process and prepare data for insertion (handle duplicates)
         processed_records = []
+        seen_codes = set()
         current_time = datetime.utcnow()
+        duplicate_count = 0
         
         for record in data:
             # Add timestamps and ID
