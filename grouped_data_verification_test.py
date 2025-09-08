@@ -290,7 +290,7 @@ class GroupedDataVerificationTester:
                     
                     for i, record in enumerate(records):
                         # Check required fields exist
-                        required_fields = ["_id", "uw", "code", "companyName"]
+                        required_fields = ["_id", "underwriters", "code", "companyName"]
                         missing_fields = [f for f in required_fields if f not in record]
                         if missing_fields:
                             integrity_issues.append(f"Record {i}: Missing fields {missing_fields}")
