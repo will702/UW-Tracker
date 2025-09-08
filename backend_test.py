@@ -315,7 +315,7 @@ class UWTrackerAPITester:
             
             if response.status_code == 200:
                 data = response.json()
-                if data.get("id") == record_id:
+                if data.get("_id") == record_id:
                     self.log_test("GET /uw-data/{id} - Get Single Record", True, 
                                 f"Retrieved record {record_id}")
                 else:
