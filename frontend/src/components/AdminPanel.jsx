@@ -282,6 +282,16 @@ const AdminPanel = () => {
           <Upload className="h-4 w-4" />
           <span>Bulk Upload</span>
         </Button>
+        
+        <Button 
+          onClick={() => setIsManagingData(true)}
+          variant="outline"
+          className="flex items-center space-x-2"
+          disabled={isManagingData}
+        >
+          <Eye className="h-4 w-4" />
+          <span>Kelola Data</span>
+        </Button>
       </div>
 
       {/* Add New Record Form */}
