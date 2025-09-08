@@ -85,8 +85,8 @@ logger = logging.getLogger(__name__)
 async def startup_event():
     """Initialize services on startup"""
     try:
-        # Initialize UW service
-        uw_service = UWService(db)
+        # Initialize UW service (grouped version)
+        uw_service = UWServiceGrouped(db)
         await uw_service.initialize_indexes()
         set_uw_service(uw_service)
         
