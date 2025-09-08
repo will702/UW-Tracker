@@ -313,14 +313,17 @@ const AdminPanel = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div>
-                  <Label htmlFor="uw">UW Code *</Label>
+                  <Label htmlFor="underwriters">Underwriters *</Label>
                   <Input
-                    id="uw"
-                    value={formData.uw}
-                    onChange={(e) => handleInputChange('uw', e.target.value)}
-                    placeholder="e.g., GT"
+                    id="underwriters"
+                    value={formData.underwriters}
+                    onChange={(e) => handleInputChange('underwriters', e.target.value)}
+                    placeholder="e.g., GT, AH, BQ (comma separated)"
                     required
                   />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Separate multiple underwriters with commas
+                  </p>
                 </div>
                 
                 <div>
