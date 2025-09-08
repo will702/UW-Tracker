@@ -117,16 +117,46 @@ async def create_uw_record(
         logger.error(f"Error in create_uw_record: {e}")
         raise HTTPException(status_code=500, detail="Failed to create record")
 
-@router.get("/stats", response_model=UWStatsResponse)
-async def get_uw_stats(
+@router.get("/stats")
+async def get_uw_stats_simple(
     service: UWService = Depends(get_uw_service)
 ):
-    """Get UW records statistics"""
+    """Get UW records statistics using simple approach"""
     try:
-        return await service.get_stats()
+        total_records = await service.collection.count_documents({})
+        
+        # Get unique UW count
+        uw_pipeline = [{"$group": {"_id": "$uw"}}]
+        uw_result = await service.collection.aggregate(uw_pipeline).to_list(None)
+        total_uw = len(uw_result)
+
+        # Get unique companies count
+        company_pipeline = [{"$group": {"_id": "$companyName"}}]
+        company_result = await service.collection.aggregate(company_pipeline).to_list(None)
+        total_companies = len(company_result)
+
+        # Get last updated
+        last_record = await service.collection.find_one(
+            {}, 
+            sort=[("updatedAt", -1)]
+        )
+        last_updated = last_record.get("updatedAt").isoformat() if last_record and last_record.get("updatedAt") else None
+
+        return {
+            "totalRecords": total_records,
+            "totalUW": total_uw,
+            "totalCompanies": total_companies,
+            "lastUpdated": last_updated
+        }
+
     except Exception as e:
-        logger.error(f"Error in get_uw_stats: {e}")
-        raise HTTPException(status_code=500, detail="Failed to retrieve statistics")
+        logger.error(f"Error getting simple stats: {e}")
+        return {
+            "totalRecords": 0,
+            "totalUW": 0,
+            "totalCompanies": 0,
+            "lastUpdated": None
+        }
 
 @router.get("/{record_id}", response_model=UWRecord)
 async def get_uw_record(
