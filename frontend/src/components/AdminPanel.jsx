@@ -63,6 +63,56 @@ const AdminPanel = () => {
     setTimeout(() => setMessage({ type: '', content: '' }), 5000);
   }, []);
 
+  // Fetch UW data from API
+  const fetchUWData = useCallback(async (search = '') => {
+    try {
+      setIsLoading(true);
+      const response = await uwAPI.getAllRecords(search, 50, 0);
+      setUwData(response.data || []);
+      setDisplayedCount(response.count || 0);
+    } catch (err) {
+      console.error('Error fetching UW data:', err);
+      showMessage('error', `Failed to load data: ${err.message}`);
+      setUwData([]);
+      setDisplayedCount(0);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [showMessage]);
+
+  // Load data when manage data panel is opened
+  useEffect(() => {
+    if (isManagingData) {
+      fetchUWData(searchTerm);
+    }
+  }, [isManagingData, fetchUWData, searchTerm]);
+
+  // Handle search
+  const handleSearch = (value) => {
+    setSearchTerm(value);
+    if (isManagingData) {
+      fetchUWData(value);
+    }
+  };
+
+  // Handle delete record
+  const handleDeleteRecord = async (recordId) => {
+    try {
+      setIsLoading(true);
+      await uwAPI.deleteRecord(recordId);
+      showMessage('success', 'Record deleted successfully');
+      
+      // Refresh data
+      await fetchUWData(searchTerm);
+      setDeleteRecordId(null);
+      
+    } catch (error) {
+      showMessage('error', `Failed to delete record: ${error.message}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Handle form input changes
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
