@@ -429,6 +429,66 @@ backend:
         agent: "testing"
         comment: "Minor: Regular /api/uw-data endpoint fails Pydantic validation due to some records having null listingBoard values. /api/uw-data/simple endpoint works perfectly as it bypasses strict validation. This is a data quality issue, not a functional problem with grouped structure."
 
+  - task: "Post-Restart Verification - 233 Records Intact"
+    implemented: true
+    working: true
+    file: "/app/backend/routers/uw_router_grouped.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ VERIFIED: Database still contains exactly 233 grouped records after system restart and memory issue. No data corruption or duplication detected."
+
+  - task: "Post-Restart Verification - GOTO 13 Underwriters"
+    implemented: true
+    working: true
+    file: "/app/backend/models/uw_record_grouped.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ VERIFIED: GOTO record confirmed to still have exactly 13 underwriters after restart: ['AZ', 'C3', 'CC', 'CP', 'CS', 'D4', 'GR', 'KZ', 'LG', 'NI', 'PD', 'PP', 'RO']. Grouped structure intact."
+
+  - task: "Post-Restart Verification - Core API Functionality"
+    implemented: true
+    working: true
+    file: "/app/backend/routers/uw_router_grouped.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ VERIFIED: All core APIs working after restart. GET /api/uw-data/simple returns proper grouped structure. GET /api/uw-data/stats correctly shows 233 records, 63 UWs. Search functionality works for both stock codes and individual UW codes within arrays."
+
+  - task: "Post-Restart Verification - Delete Functionality"
+    implemented: true
+    working: true
+    file: "/app/backend/routers/uw_router_grouped.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ VERIFIED: DELETE functionality working correctly after restart. Successfully tested with record containing multiple underwriters. Statistics update properly after deletion (234 -> 233). No issues with grouped data structure."
+
+  - task: "Post-Restart Verification - Data Integrity"
+    implemented: true
+    working: true
+    file: "/app/backend/services/uw_service_grouped.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ VERIFIED: Data integrity confirmed after system restart. All sample records have proper structure with underwriters as arrays, valid IDs, stock codes, and company names. No corruption detected from memory limit issue."
+
 frontend:
   # Frontend testing not performed as per instructions
 
