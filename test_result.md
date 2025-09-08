@@ -101,3 +101,205 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+user_problem_statement: "Test the UW Tracker backend API thoroughly including all endpoints, data validation, search functionality, database integration, and error handling."
+
+backend:
+  - task: "API Health Check"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "API health endpoint responding correctly at /api/ with proper message"
+
+  - task: "GET /api/uw-data - Basic Retrieval"
+    implemented: true
+    working: true
+    file: "/app/backend/routers/uw_router.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Successfully retrieves records with proper pagination structure (data, total, count fields)"
+
+  - task: "GET /api/uw-data - Pagination"
+    implemented: true
+    working: true
+    file: "/app/backend/routers/uw_router.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Pagination working correctly with limit and offset parameters"
+
+  - task: "Search Functionality"
+    implemented: true
+    working: true
+    file: "/app/backend/services/uw_service.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Search works for UW codes, stock codes, company names, and is case-insensitive. Tested with real data (AH, GOTO, Wira)"
+
+  - task: "GET /api/uw-data/stats"
+    implemented: true
+    working: true
+    file: "/app/backend/routers/uw_router.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Statistics endpoint returns totalRecords, totalUW, totalCompanies, and lastUpdated fields correctly"
+
+  - task: "POST /api/uw-data - Create Record"
+    implemented: true
+    working: true
+    file: "/app/backend/routers/uw_router.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Successfully creates new records with proper validation. Returns created record with _id, createdAt, updatedAt fields"
+
+  - task: "Duplicate Record Prevention"
+    implemented: true
+    working: true
+    file: "/app/backend/services/uw_service.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Correctly rejects duplicate records with 400 status code when same stock code already exists"
+
+  - task: "Data Validation"
+    implemented: true
+    working: true
+    file: "/app/backend/models/uw_record.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Comprehensive validation working: rejects empty data, empty UW/stock codes, negative IPO prices, invalid listing boards with 422 status"
+
+  - task: "PUT /api/uw-data/{id} - Update Record"
+    implemented: true
+    working: true
+    file: "/app/backend/routers/uw_router.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Successfully updates existing records with partial data. Updates updatedAt timestamp automatically"
+
+  - task: "GET /api/uw-data/{id} - Single Record"
+    implemented: true
+    working: true
+    file: "/app/backend/routers/uw_router.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Retrieves single records by ID correctly. Returns 404 for nonexistent records"
+
+  - task: "DELETE /api/uw-data/{id} - Delete Record"
+    implemented: true
+    working: true
+    file: "/app/backend/routers/uw_router.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Successfully deletes records and returns proper success message. Verified deletion with follow-up GET request"
+
+  - task: "POST /api/uw-data/bulk - Bulk Upload"
+    implemented: true
+    working: true
+    file: "/app/backend/routers/uw_router.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Bulk upload endpoint working correctly. Returns success/failed counts and error details"
+
+  - task: "Error Handling"
+    implemented: true
+    working: true
+    file: "/app/backend/routers/uw_router.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Proper error handling for invalid IDs (404), malformed requests (422), and validation errors"
+
+  - task: "Database Integration"
+    implemented: true
+    working: true
+    file: "/app/backend/services/uw_service.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "MongoDB integration working correctly. Indexes created successfully. Data import script functional with 454 records processed from Excel file"
+
+  - task: "URL Routing and CORS"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "All API endpoints properly prefixed with /api. CORS configured correctly. Backend accessible via external URL"
+
+frontend:
+  # Frontend testing not performed as per instructions
+
+metadata:
+  created_by: "testing_agent"
+  version: "1.0"
+  test_sequence: 1
+  run_ui: false
+
+test_plan:
+  current_focus: []
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
+agent_communication:
+  - agent: "testing"
+    message: "Comprehensive backend API testing completed successfully. All 24 test cases passed (100% success rate). API endpoints working correctly with proper validation, error handling, search functionality, and database integration. Database contains real Indonesian IPO data. Ready for production use."
