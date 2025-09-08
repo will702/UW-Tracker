@@ -185,7 +185,7 @@ class GroupedDataVerificationTester:
             ("AZ", "Individual UW code in arrays"),
             ("GOTO", "Stock code search"),
             ("goto", "Case insensitive stock search"),
-            ("Wira", "Company name search")
+            ("Merry", "Company name search")
         ]
         
         all_passed = True
