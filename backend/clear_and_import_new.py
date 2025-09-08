@@ -62,6 +62,15 @@ async def clear_and_import_data():
         duplicate_count = 0
         
         for record in data:
+            # Skip duplicates based on code
+            code = record.get('code')
+            if code in seen_codes:
+                duplicate_count += 1
+                logger.warning(f"Skipping duplicate record with code: {code}")
+                continue
+            
+            seen_codes.add(code)
+            
             # Add timestamps and ID
             processed_record = {
                 **record,
