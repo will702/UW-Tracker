@@ -29,7 +29,15 @@ async def clear_and_import_data():
         db = client[db_name]
         collection = db.uw_records
         
-        # Step 1: Clear all existing data
+        # Step 1: Drop existing indexes to avoid duplicate key errors
+        logger.info("Dropping existing indexes...")
+        try:
+            await collection.drop_index("code_1")
+            logger.info("Dropped unique index on 'code' field")
+        except Exception as e:
+            logger.info("Index 'code_1' doesn't exist or already dropped")
+        
+        # Step 2: Clear all existing data
         logger.info("Clearing all existing UW records...")
         delete_result = await collection.delete_many({})
         logger.info(f"Deleted {delete_result.deleted_count} existing records")
