@@ -117,6 +117,26 @@ async def create_uw_record(
         logger.error(f"Error in create_uw_record: {e}")
         raise HTTPException(status_code=500, detail="Failed to create record")
 
+@router.get("/count")
+async def get_direct_count(
+    service: UWService = Depends(get_uw_service)
+):
+    """Direct database count for debugging"""
+    try:
+        count = await service.collection.count_documents({})
+        sample = await service.collection.find_one({})
+        
+        return {
+            "direct_count": count,
+            "collection_name": service.collection.name,
+            "sample_record": {
+                "code": sample.get("code") if sample else None,
+                "company": sample.get("companyName") if sample else None
+            }
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
 @router.get("/stats")
 async def get_uw_stats_simple(
     service: UWService = Depends(get_uw_service)
