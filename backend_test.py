@@ -198,7 +198,9 @@ class UWTrackerAPITester:
     def test_create_duplicate_record(self):
         """Test creating duplicate record (should fail)"""
         try:
-            test_data = self.create_test_record_data("DUP1")
+            # Use a unique suffix for this test
+            unique_suffix = str(uuid.uuid4())[:8].upper()
+            test_data = self.create_test_record_data(f"DUP{unique_suffix}")
             
             # Create first record
             response1 = self.session.post(
