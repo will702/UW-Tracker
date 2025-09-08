@@ -285,6 +285,54 @@ backend:
         agent: "testing"
         comment: "All API endpoints properly prefixed with /api. CORS configured correctly. Backend accessible via external URL"
 
+  - task: "Data Import Verification - 233 Records"
+    implemented: true
+    working: true
+    file: "/app/backend/services/uw_service.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Verified exactly 233 records imported successfully from JSON data. Database contains proper data structure with all required fields (uw, code, companyName, ipoPrice, returns, etc.)"
+
+  - task: "GET /api/uw-data/simple - Post Import"
+    implemented: true
+    working: true
+    file: "/app/backend/routers/uw_router.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Simple endpoint working perfectly with imported data. Returns proper structure with data, count, total fields. Sample records show correct data types and values."
+
+  - task: "Search Functionality - Post Import"
+    implemented: true
+    working: true
+    file: "/app/backend/services/uw_service.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Search functionality verified with real imported data. Successfully tested UW code search (YJ), stock code search (MERI), company name search (Merry), and case-insensitive search. All returning appropriate results."
+
+  - task: "Statistics Update After Operations"
+    implemented: true
+    working: true
+    file: "/app/backend/routers/uw_router.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Statistics endpoint correctly updates after create/delete operations. Verified stats change from 233 -> 234 -> 233 during test record lifecycle. Real-time statistics working properly."
+
 frontend:
   # Frontend testing not performed as per instructions
 
