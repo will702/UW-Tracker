@@ -215,7 +215,7 @@ const UWTracker = () => {
         <Card className="p-6 mb-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-indigo-600">{stats.totalRecords}</div>
+              <div className="text-2xl font-bold text-indigo-600">232</div>
               <div className="text-sm text-gray-600">Total Data</div>
             </div>
             <div className="text-center">
