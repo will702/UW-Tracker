@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Test the UW Tracker backend API thoroughly including all endpoints, data validation, search functionality, database integration, and error handling."
+user_problem_statement: "Implement data management and delete functionality: 1) Clear all existing test data, 2) Import fresh data from new JSON file, 3) Add admin-only delete functionality with confirmation dialogs"
 
 backend:
   - task: "API Health Check"
