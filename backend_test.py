@@ -164,7 +164,7 @@ class UWTrackerAPITester:
             test_data = self.create_test_record_data()
             
             response = self.session.post(
-                f"{self.base_url}/uw-data",
+                f"{self.base_url}/uw-data/",
                 json=test_data,
                 headers={"Content-Type": "application/json"}
             )
