@@ -171,11 +171,11 @@ class UWTrackerAPITester:
             
             if response.status_code == 200:
                 data = response.json()
-                if "id" in data and data["code"] == test_data["code"]:
-                    self.created_record_ids.append(data["id"])
+                if "_id" in data and data["code"] == test_data["code"]:
+                    self.created_record_ids.append(data["_id"])
                     self.log_test("POST /uw-data - Create Record", True, 
-                                f"Created record with ID: {data['id']}")
-                    return data["id"]
+                                f"Created record with ID: {data['_id']}")
+                    return data["_id"]
                 else:
                     self.log_test("POST /uw-data - Create Record", False, 
                                 f"Invalid response structure: {data}")
