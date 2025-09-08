@@ -129,7 +129,7 @@ async def group_and_import_data():
             # Show sample multi-UW records
             multi_uw_samples = await collection.find(
                 {"$expr": {"$gt": [{"$size": "$underwriters"}, 1]}}
-            ).sort([("$expr", {"$size": "$underwriters"}), -1]).limit(5).to_list(length=5)
+            ).limit(5).to_list(length=5)
             
             logger.info("\nTop 5 stocks with most underwriters:")
             for i, record in enumerate(multi_uw_samples, 1):
