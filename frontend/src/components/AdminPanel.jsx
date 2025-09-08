@@ -566,7 +566,19 @@ const AdminPanel = () => {
                   <TableBody>
                     {uwData.map((item) => (
                       <TableRow key={item._id} className="hover:bg-gray-50">
-                        <TableCell className="font-medium text-indigo-600">{item.uw}</TableCell>
+                        <TableCell className="font-medium text-indigo-600">
+                          {Array.isArray(item.underwriters) ? (
+                            <div className="flex flex-wrap gap-1">
+                              {item.underwriters.map((uw, index) => (
+                                <Badge key={index} variant="outline" className="text-xs">
+                                  {uw}
+                                </Badge>
+                              ))}
+                            </div>
+                          ) : (
+                            item.uw || item.underwriters
+                          )}
+                        </TableCell>
                         <TableCell className="font-medium">{item.code}</TableCell>
                         <TableCell className="max-w-xs">
                           <div className="truncate" title={item.companyName}>
