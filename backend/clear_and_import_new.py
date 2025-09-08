@@ -91,9 +91,11 @@ async def clear_and_import_data():
             
             processed_records.append(processed_record)
         
-        # Step 4: Insert new data
+        logger.info(f"Found {duplicate_count} duplicate records (skipped)")
+        
+        # Step 5: Insert new data
         if processed_records:
-            logger.info(f"Inserting {len(processed_records)} new records...")
+            logger.info(f"Inserting {len(processed_records)} unique records...")
             insert_result = await collection.insert_many(processed_records)
             logger.info(f"Successfully inserted {len(insert_result.inserted_ids)} records")
             
