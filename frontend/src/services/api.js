@@ -54,7 +54,7 @@ export const uwAPI = {
   // Get UW statistics
   getStats: async () => {
     try {
-      const response = await apiClient.get('/uw-data/stats/');
+      const response = await apiClient.get('/uw-data/stats');
       return response.data;
     } catch (error) {
       throw new Error(`Failed to fetch UW stats: ${error.message}`);
