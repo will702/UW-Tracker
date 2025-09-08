@@ -208,7 +208,7 @@ class UWTrackerAPITester:
             )
             
             if response1.status_code == 200:
-                record_id = response1.json().get("id")
+                record_id = response1.json().get("_id")
                 if record_id:
                     self.created_record_ids.append(record_id)
                 
