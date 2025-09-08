@@ -154,7 +154,7 @@ class UWTrackerAPITester:
             "returnD6": -0.02,
             "returnD7": -0.05,
             "listingBoard": "Pengembangan",
-            "listingDate": "2024-01-15T00:00:00Z",
+            "listingDate": "2024-01-15T00:00:00",
             "record": "Test Record"
         }
     
