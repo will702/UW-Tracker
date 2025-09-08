@@ -26,6 +26,28 @@ def set_uw_service(service: UWService):
 
 router = APIRouter(prefix="/uw-data", tags=["UW Records"])
 
+@router.get("/debug", response_model=dict)
+async def debug_endpoint(
+    service: UWService = Depends(get_uw_service)
+):
+    """Debug endpoint to check data"""
+    try:
+        # Get raw records from database
+        records = await service.collection.find({}).limit(2).to_list(length=2)
+        result = []
+        for record in records:
+            record["_id"] = str(record["_id"])
+            result.append(record)
+        
+        return {
+            "message": "Debug data",
+            "count": len(result),
+            "data": result
+        }
+    except Exception as e:
+        logger.error(f"Error in debug endpoint: {e}")
+        return {"error": str(e)}
+
 @router.get("/", response_model=UWDataResponse)
 async def get_uw_records(
     search: Optional[str] = Query(None, description="Search term for UW, code, or company name"),
