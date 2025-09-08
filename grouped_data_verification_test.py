@@ -295,9 +295,9 @@ class GroupedDataVerificationTester:
                         if missing_fields:
                             integrity_issues.append(f"Record {i}: Missing fields {missing_fields}")
                         
-                        # Check uw field is array
-                        if not isinstance(record.get("uw", []), list):
-                            integrity_issues.append(f"Record {i}: UW field is not an array")
+                        # Check underwriters field is array
+                        if not isinstance(record.get("underwriters", []), list):
+                            integrity_issues.append(f"Record {i}: Underwriters field is not an array")
                         
                         # Check for null/empty critical fields
                         if not record.get("code"):
