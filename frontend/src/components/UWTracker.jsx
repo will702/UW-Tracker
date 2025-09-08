@@ -1,9 +1,10 @@
-import React, { useState, useMemo } from 'react';
-import { Search, FileText, TrendingUp } from 'lucide-react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { Search, FileText, TrendingUp, RefreshCw, Plus, AlertCircle } from 'lucide-react';
 import { Input } from './ui/input';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
+import { Alert, AlertDescription } from './ui/alert';
 import {
   Table,
   TableBody,
@@ -12,28 +13,104 @@ import {
   TableHeader,
   TableRow,
 } from './ui/table';
-import { mockUWData, getUWStats, searchUWData, formatReturn, formatPrice } from '../data/mockData';
+import { uwAPI, formatReturn, formatPrice, formatDate } from '../services/api';
 
 const UWTracker = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSearching, setIsSearching] = useState(false);
+  const [uwData, setUwData] = useState([]);
+  const [stats, setStats] = useState({
+    totalRecords: 0,
+    totalUW: 0,
+    totalCompanies: 0,
+    lastUpdated: null
+  });
+  const [error, setError] = useState(null);
+  const [displayedCount, setDisplayedCount] = useState(0);
 
-  const filteredData = useMemo(() => {
-    return searchUWData(searchTerm);
-  }, [searchTerm]);
+  // Debounced search function
+  const debounce = useCallback((func, wait) => {
+    let timeout;
+    return function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  }, []);
 
-  const stats = getUWStats();
+  // Fetch UW data from API
+  const fetchUWData = useCallback(async (search = '') => {
+    try {
+      setIsSearching(true);
+      setError(null);
+      
+      const response = await uwAPI.getAllRecords(search, 100, 0);
+      setUwData(response.data || []);
+      setDisplayedCount(response.count || 0);
+    } catch (err) {
+      console.error('Error fetching UW data:', err);
+      setError(`Failed to load data: ${err.message}`);
+      setUwData([]);
+      setDisplayedCount(0);
+    } finally {
+      setIsSearching(false);
+    }
+  }, []);
 
-  const handleSearch = (value) => {
-    setSearchTerm(value);
-    setIsLoading(true);
-    // Simulate API call delay
-    setTimeout(() => {
+  // Fetch statistics
+  const fetchStats = useCallback(async () => {
+    try {
+      const statsData = await uwAPI.getStats();
+      setStats(statsData);
+    } catch (err) {
+      console.error('Error fetching stats:', err);
+      // Don't show error for stats, just use default values
+    }
+  }, []);
+
+  // Debounced search handler
+  const debouncedSearch = useMemo(
+    () => debounce((searchValue) => fetchUWData(searchValue), 300),
+    [debounce, fetchUWData]
+  );
+
+  // Initial data load
+  useEffect(() => {
+    const loadInitialData = async () => {
+      setIsLoading(true);
+      await Promise.all([
+        fetchUWData(),
+        fetchStats()
+      ]);
       setIsLoading(false);
-    }, 300);
+    };
+
+    loadInitialData();
+  }, [fetchUWData, fetchStats]);
+
+  // Handle search input change
+  const handleSearchChange = (value) => {
+    setSearchTerm(value);
+    debouncedSearch(value);
   };
 
+  // Refresh all data
+  const handleRefresh = async () => {
+    setIsLoading(true);
+    await Promise.all([
+      fetchUWData(searchTerm),
+      fetchStats()
+    ]);
+    setIsLoading(false);
+  };
+
+  // Utility functions for styling
   const getReturnColor = (returnValue) => {
+    if (returnValue === null || returnValue === undefined) return 'text-gray-400';
     if (returnValue > 0) return 'text-green-600';
     if (returnValue < 0) return 'text-red-600';
     return 'text-gray-600';
@@ -52,6 +129,17 @@ const UWTracker = () => {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading UW Tracker data...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -68,6 +156,16 @@ const UWTracker = () => {
               </div>
             </div>
             <div className="flex items-center space-x-4">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleRefresh}
+                disabled={isLoading}
+                className="flex items-center space-x-2"
+              >
+                <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+                <span>Refresh</span>
+              </Button>
               <span className="text-sm text-gray-600">Mode Tamu</span>
               <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700">
                 Login
@@ -94,32 +192,65 @@ const UWTracker = () => {
               type="text"
               placeholder="Cari berdasarkan kode UW, Penjamin Emisi, atau Saham"
               value={searchTerm}
-              onChange={(e) => handleSearch(e.target.value)}
+              onChange={(e) => handleSearchChange(e.target.value)}
               className="pl-10 pr-4 py-3 w-full rounded-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
             />
+            {isSearching && (
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-600"></div>
+              </div>
+            )}
           </div>
         </div>
 
+        {/* Error Alert */}
+        {error && (
+          <Alert className="mb-6" variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+
         {/* Stats */}
         <Card className="p-6 mb-8">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-2">
-              <span className="text-sm font-medium text-gray-600">Total Data:</span>
-              <span className="text-lg font-bold text-indigo-600">{stats.totalData}</span>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-indigo-600">{stats.totalRecords}</div>
+              <div className="text-sm text-gray-600">Total Data</div>
             </div>
-            <div className="flex items-center space-x-2">
-              <span className="text-sm font-medium text-gray-600">Menampilkan:</span>
-              <span className="text-lg font-bold text-indigo-600">{filteredData.length}</span>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-indigo-600">{displayedCount}</div>
+              <div className="text-sm text-gray-600">Menampilkan</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-indigo-600">{stats.totalUW}</div>
+              <div className="text-sm text-gray-600">Total UW</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-indigo-600">{stats.totalCompanies}</div>
+              <div className="text-sm text-gray-600">Total Perusahaan</div>
             </div>
           </div>
         </Card>
 
         {/* Data Table */}
         <Card className="overflow-hidden">
-          {isLoading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-              <span className="ml-3 text-gray-600">Memuat data...</span>
+          {uwData.length === 0 && !isSearching ? (
+            <div className="text-center py-12">
+              <TrendingUp className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+              <p className="text-gray-500">
+                {searchTerm ? 'Tidak ada data yang sesuai dengan pencarian' : 'Tidak ada data yang tersedia'}
+              </p>
+              {!searchTerm && (
+                <Button 
+                  onClick={handleRefresh} 
+                  className="mt-4"
+                  variant="outline"
+                >
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Muat Data
+                </Button>
+              )}
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -143,7 +274,7 @@ const UWTracker = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredData.map((item) => (
+                  {uwData.map((item) => (
                     <TableRow key={item.id} className="hover:bg-gray-50">
                       <TableCell className="font-medium text-indigo-600">{item.uw}</TableCell>
                       <TableCell className="font-medium">{item.code}</TableCell>
@@ -180,11 +311,11 @@ const UWTracker = () => {
                         </Badge>
                       </TableCell>
                       <TableCell className="text-sm text-gray-600">
-                        {new Date(item.listingDate).toLocaleDateString('id-ID')}
+                        {formatDate(item.listingDate)}
                       </TableCell>
                       <TableCell>
                         <Badge variant="outline" className="font-medium">
-                          {item.record}
+                          {item.record || '-'}
                         </Badge>
                       </TableCell>
                     </TableRow>
@@ -193,14 +324,14 @@ const UWTracker = () => {
               </Table>
             </div>
           )}
-          
-          {filteredData.length === 0 && !isLoading && (
-            <div className="text-center py-12">
-              <TrendingUp className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-500">Tidak ada data yang sesuai dengan pencarian</p>
-            </div>
-          )}
         </Card>
+
+        {/* Footer with last updated info */}
+        {stats.lastUpdated && (
+          <div className="text-center mt-6 text-sm text-gray-500">
+            Data terakhir diperbarui: {formatDate(stats.lastUpdated)}
+          </div>
+        )}
       </main>
     </div>
   );
