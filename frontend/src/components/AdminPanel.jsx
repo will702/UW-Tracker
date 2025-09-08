@@ -166,7 +166,7 @@ const AdminPanel = () => {
       
       // Reset form
       setFormData({
-        uw: '', code: '', companyName: '', ipoPrice: '',
+        underwriters: '', code: '', companyName: '', ipoPrice: '',
         returnD1: '', returnD2: '', returnD3: '', returnD4: '',
         returnD5: '', returnD6: '', returnD7: '', listingBoard: '',
         listingDate: '', record: ''
