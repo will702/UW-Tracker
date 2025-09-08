@@ -38,7 +38,7 @@ const AdminPanel = () => {
   const [deleteRecordId, setDeleteRecordId] = useState(null);
   const [displayedCount, setDisplayedCount] = useState(0);
   const [formData, setFormData] = useState({
-    uw: '',
+    underwriters: '',  // Will be converted to array on submit
     code: '',
     companyName: '',
     ipoPrice: '',
