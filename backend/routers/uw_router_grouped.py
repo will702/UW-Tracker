@@ -39,7 +39,7 @@ async def get_simple_records(
         if search:
             query = {"underwriters": {"$in": [search.upper()]}}  # Search only in UW array
         
-        records = await service.collection.find(query).sort("listingDate", -1).limit(limit).to_list(length=limit)
+        records = await service.collection.find(query).sort("listingDate", -1).limit(limit).to_list(length=None)
         result = []
         for record in records:
             record["_id"] = str(record["_id"])
