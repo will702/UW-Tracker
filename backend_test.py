@@ -92,8 +92,120 @@ class UWTrackerAPITester:
             self.log_test("GET /uw-data - Basic", False, f"Error: {str(e)}")
             return False
     
+    def test_search_functionality_uw_only(self):
+        """Test search functionality - UW codes ONLY (new requirement)"""
+        print("\n🔍 Testing UW-Only Search Functionality...")
+        
+        # Test 1: UW code search should work (AZ is in GOTO's underwriters)
+        try:
+            response = self.session.get(f"{self.base_url}/uw-data?search=AZ")
+            if response.status_code == 200:
+                data = response.json()
+                if data['count'] > 0:
+                    self.log_test("UW Search - AZ code", True, 
+                                f"Found {data['count']} records with UW code 'AZ'")
+                    # Verify GOTO is in results (it should have AZ as underwriter)
+                    goto_found = any(record.get('code') == 'GOTO' for record in data['data'])
+                    if goto_found:
+                        self.log_test("UW Search - GOTO found with AZ", True, 
+                                    "GOTO record correctly found when searching for UW code 'AZ'")
+                    else:
+                        self.log_test("UW Search - GOTO found with AZ", False, 
+                                    "GOTO record not found when searching for UW code 'AZ' (expected)")
+                else:
+                    self.log_test("UW Search - AZ code", False, 
+                                "No records found for UW code 'AZ' (should find records)")
+            else:
+                self.log_test("UW Search - AZ code", False, f"Status: {response.status_code}")
+        except Exception as e:
+            self.log_test("UW Search - AZ code", False, f"Error: {str(e)}")
+        
+        # Test 2: Stock code search should NOT work (GOTO should return 0 results)
+        try:
+            response = self.session.get(f"{self.base_url}/uw-data?search=GOTO")
+            if response.status_code == 200:
+                data = response.json()
+                if data['count'] == 0:
+                    self.log_test("Stock Code Search - GOTO (should fail)", True, 
+                                "Correctly returned 0 results for stock code 'GOTO' (search disabled)")
+                else:
+                    self.log_test("Stock Code Search - GOTO (should fail)", False, 
+                                f"Found {data['count']} records for stock code 'GOTO' (should be 0)")
+            else:
+                self.log_test("Stock Code Search - GOTO (should fail)", False, f"Status: {response.status_code}")
+        except Exception as e:
+            self.log_test("Stock Code Search - GOTO (should fail)", False, f"Error: {str(e)}")
+        
+        # Test 3: Company name search should NOT work
+        try:
+            response = self.session.get(f"{self.base_url}/uw-data?search=Gojek")
+            if response.status_code == 200:
+                data = response.json()
+                if data['count'] == 0:
+                    self.log_test("Company Name Search - Gojek (should fail)", True, 
+                                "Correctly returned 0 results for company name 'Gojek' (search disabled)")
+                else:
+                    self.log_test("Company Name Search - Gojek (should fail)", False, 
+                                f"Found {data['count']} records for company name 'Gojek' (should be 0)")
+            else:
+                self.log_test("Company Name Search - Gojek (should fail)", False, f"Status: {response.status_code}")
+        except Exception as e:
+            self.log_test("Company Name Search - Gojek (should fail)", False, f"Error: {str(e)}")
+        
+        # Test 4: Case insensitive UW search should work
+        try:
+            response = self.session.get(f"{self.base_url}/uw-data?search=az")
+            if response.status_code == 200:
+                data = response.json()
+                if data['count'] > 0:
+                    self.log_test("UW Search - Case Insensitive (az)", True, 
+                                f"Found {data['count']} records with lowercase 'az' (case insensitive working)")
+                else:
+                    self.log_test("UW Search - Case Insensitive (az)", False, 
+                                "No records found for lowercase 'az' (case insensitive not working)")
+            else:
+                self.log_test("UW Search - Case Insensitive (az)", False, f"Status: {response.status_code}")
+        except Exception as e:
+            self.log_test("UW Search - Case Insensitive (az)", False, f"Error: {str(e)}")
+    
+    def test_search_functionality_simple_endpoint(self):
+        """Test search functionality on /simple endpoint - UW codes ONLY"""
+        print("\n🔍 Testing UW-Only Search on /simple endpoint...")
+        
+        # Test 1: UW code search should work on simple endpoint
+        try:
+            response = self.session.get(f"{self.base_url}/uw-data/simple?search=AZ")
+            if response.status_code == 200:
+                data = response.json()
+                if data['count'] > 0:
+                    self.log_test("Simple UW Search - AZ code", True, 
+                                f"Found {data['count']} records with UW code 'AZ' on simple endpoint")
+                else:
+                    self.log_test("Simple UW Search - AZ code", False, 
+                                "No records found for UW code 'AZ' on simple endpoint")
+            else:
+                self.log_test("Simple UW Search - AZ code", False, f"Status: {response.status_code}")
+        except Exception as e:
+            self.log_test("Simple UW Search - AZ code", False, f"Error: {str(e)}")
+        
+        # Test 2: Stock code search should NOT work on simple endpoint
+        try:
+            response = self.session.get(f"{self.base_url}/uw-data/simple?search=GOTO")
+            if response.status_code == 200:
+                data = response.json()
+                if data['count'] == 0:
+                    self.log_test("Simple Stock Code Search - GOTO (should fail)", True, 
+                                "Correctly returned 0 results for stock code 'GOTO' on simple endpoint")
+                else:
+                    self.log_test("Simple Stock Code Search - GOTO (should fail)", False, 
+                                f"Found {data['count']} records for stock code 'GOTO' on simple endpoint (should be 0)")
+            else:
+                self.log_test("Simple Stock Code Search - GOTO (should fail)", False, f"Status: {response.status_code}")
+        except Exception as e:
+            self.log_test("Simple Stock Code Search - GOTO (should fail)", False, f"Error: {str(e)}")
+    
     def test_search_functionality(self):
-        """Test search functionality"""
+        """Test search functionality (legacy - for compatibility)"""
         search_tests = [
             ("AH", "UW code search"),
             ("GOTO", "Stock code search"),
