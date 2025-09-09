@@ -190,7 +190,7 @@ const UWTracker = () => {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
             <Input
               type="text"
-              placeholder="Cari berdasarkan kode UW, Penjamin Emisi, atau Saham"
+              placeholder="Cari berdasarkan kode UW saja"
               value={searchTerm}
               onChange={(e) => handleSearchChange(e.target.value)}
               className="pl-10 pr-4 py-3 w-full rounded-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
