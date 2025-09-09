@@ -504,14 +504,18 @@ test_plan:
   test_all: false
   test_priority: "high_first"
 
+  - task: "Search Functionality - UW Code Only Fix"
+    implemented: true
+    working: false
+    file: "/app/backend/services/uw_service_grouped.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "main"
+        comment: "Modified search functionality to search ONLY by underwriter codes, not stock codes or company names. Removed $or query with regex matching for code and companyName. Updated both service and router files. Updated frontend placeholder text to reflect UW-only search."
+
 agent_communication:
-  - agent: "testing"
-    message: "Comprehensive backend API testing completed successfully. All 24 test cases passed (100% success rate). API endpoints working correctly with proper validation, error handling, search functionality, and database integration. Database contains real Indonesian IPO data. Ready for production use."
   - agent: "main"
-    message: "Starting implementation of new requirements: 1) Clear existing data and import fresh data from new JSON file, 2) Add admin-only delete functionality with confirmation dialogs. Backend delete endpoint already exists and was tested successfully."
-  - agent: "testing"
-    message: "Data import verification completed successfully. Confirmed 233 records imported correctly with proper data structure. All core API endpoints (simple, stats, delete) working perfectly with imported data. Search functionality verified with real data. Delete functionality and statistics updates working correctly. Backend ready for frontend integration."
-  - agent: "testing"
-    message: "GROUPED STRUCTURE TESTING COMPLETED: ✅ All 18 grouped structure tests passed (100% success rate). Key findings: 1) Database contains exactly 233 records with grouped underwriters structure, 2) GOTO confirmed to have 13 underwriters as expected, 3) Simple endpoint (/api/uw-data/simple) working perfectly with grouped structure, 4) Stats endpoint correctly reports 63 unique underwriters using aggregation, 5) Search functionality works with multiple underwriters in arrays, 6) Delete functionality works correctly with grouped records, 7) Data integrity verified - average 1.8 UWs per record. Minor issue: Regular /api/uw-data endpoint has validation errors due to some records having null listingBoard values, but /simple endpoint works perfectly. Grouped structure implementation is fully functional and ready for production."
-  - agent: "testing"
-    message: "POST-RESTART VERIFICATION COMPLETED: ✅ All 11 post-restart verification tests passed (100% success rate). CRITICAL FINDINGS: 1) Database integrity confirmed - exactly 233 grouped records intact (no duplication to 444), 2) GOTO record verified to still have 13 underwriters in array format, 3) All core API functionality working: GET /api/uw-data/simple and GET /api/uw-data/stats endpoints operational, 4) Search functionality works for both stock codes and individual UW codes within arrays, 5) DELETE functionality working correctly with grouped records and proper statistics updates, 6) No data corruption detected from system restart or memory limit issue. The grouped underwriter work is completely intact and functional after the system restart. Application ready for production use."
+    message: "Fixed search functionality as requested by user. Modified backend service and router to search only in underwriters array using exact match with uppercase conversion. Removed stock code and company name search capabilities. Updated frontend placeholder text to indicate UW-only search. Ready for backend testing to verify the fix works correctly."
