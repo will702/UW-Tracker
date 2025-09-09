@@ -522,3 +522,5 @@ test_plan:
 agent_communication:
   - agent: "main"
     message: "Fixed search functionality as requested by user. Modified backend service and router to search only in underwriters array using exact match with uppercase conversion. Removed stock code and company name search capabilities. Updated frontend placeholder text to indicate UW-only search. Ready for backend testing to verify the fix works correctly."
+  - agent: "testing"
+    message: "✅ SEARCH FIX VERIFICATION COMPLETE: The UW-only search functionality is working perfectly! All test requirements passed: UW code searches work (AZ finds 11 records including GOTO), stock code searches return 0 results (GOTO search disabled), company name searches return 0 results (Gojek search disabled), case-insensitive UW search works (az=AZ), and both /api/uw-data and /api/uw-data/simple endpoints behave correctly. GOTO record confirmed with exactly 13 underwriters as expected. The search behavior has changed exactly as requested - it now searches ONLY by underwriter codes."
