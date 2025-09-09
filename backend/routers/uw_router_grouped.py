@@ -65,7 +65,7 @@ async def get_simple_records(
 
 @router.get("/", response_model=UWDataGroupedResponse)
 async def get_uw_records(
-    search: Optional[str] = Query(None, description="Search term for UW, code, or company name"),
+    search: Optional[str] = Query(None, description="Search term for UW codes only"),
     limit: int = Query(100, ge=1, le=1000, description="Number of records to return"),
     offset: int = Query(0, ge=0, description="Number of records to skip"),
     service: UWServiceGrouped = Depends(get_uw_service)
