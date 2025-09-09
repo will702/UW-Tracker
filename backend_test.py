@@ -249,12 +249,12 @@ class UWTrackerAPITester:
             return False
     
     def create_test_record_data(self, code_suffix: str = None):
-        """Create realistic test record data"""
+        """Create realistic test record data with grouped structure"""
         if code_suffix is None:
             code_suffix = str(uuid.uuid4())[:4].upper()
         
         return {
-            "uw": "TEST",
+            "underwriters": ["TEST", "UW2"],  # Required field for grouped structure
             "code": f"TST{code_suffix}",
             "companyName": f"PT Test Company {code_suffix} Tbk",
             "ipoPrice": 1500.0,
