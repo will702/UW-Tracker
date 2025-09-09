@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Fix search functionality to search only based on underwriter code, not stock names or company names"
+user_problem_statement: "Fix search functionality for non-available data like 'lg' or 'xa' although the data exists - searching for existing underwriter codes was not returning results due to backend bug"
 
 backend:
   - task: "API Health Check"
