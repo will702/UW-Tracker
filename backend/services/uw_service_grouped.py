@@ -42,13 +42,7 @@ class UWServiceGrouped:
             # Build query
             query = {}
             if search:
-                query = {
-                    "$or": [
-                        {"underwriters": {"$in": [search.upper()]}},  # Search in UW array
-                        {"code": {"$regex": search, "$options": "i"}},
-                        {"companyName": {"$regex": search, "$options": "i"}}
-                    ]
-                }
+                query = {"underwriters": {"$in": [search.upper()]}}  # Search only in UW array
 
             # Get total count
             total = await self.collection.count_documents(query)
