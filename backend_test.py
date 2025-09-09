@@ -671,6 +671,7 @@ class UWTrackerAPITester:
         # Core functionality tests
         self.test_get_all_records()
         self.test_search_functionality_uw_only()  # New UW-only search test
+        self.test_search_bug_investigation()  # Test the reported search bug
         self.test_search_functionality_simple_endpoint()  # New simple endpoint test
         self.test_search_functionality()  # Legacy search test for comparison
         self.test_get_stats()
