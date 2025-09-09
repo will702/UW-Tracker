@@ -44,11 +44,11 @@ async def get_simple_records(
         for record in records:
             record["_id"] = str(record["_id"])
             # Convert datetime to string for JSON serialization
-            if "listingDate" in record:
+            if "listingDate" in record and record["listingDate"] is not None:
                 record["listingDate"] = record["listingDate"].isoformat()
-            if "createdAt" in record:
+            if "createdAt" in record and record["createdAt"] is not None:
                 record["createdAt"] = record["createdAt"].isoformat()
-            if "updatedAt" in record:
+            if "updatedAt" in record and record["updatedAt"] is not None:
                 record["updatedAt"] = record["updatedAt"].isoformat()
             result.append(record)
         
