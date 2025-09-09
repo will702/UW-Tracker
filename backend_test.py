@@ -168,6 +168,96 @@ class UWTrackerAPITester:
         except Exception as e:
             self.log_test("UW Search - Case Insensitive (az)", False, f"Error: {str(e)}")
     
+    def test_search_bug_investigation(self):
+        """Test the reported search bug for 'lg' and 'xa' searches"""
+        print("\n🔍 Testing Reported Search Bug - LG and XA searches...")
+        
+        # Test LG search (should work according to our investigation)
+        try:
+            response = self.session.get(f"{self.base_url}/uw-data?search=LG")
+            if response.status_code == 200:
+                data = response.json()
+                if data['count'] > 0:
+                    self.log_test("Search Bug - LG search", True, 
+                                f"LG search works correctly - found {data['count']} records")
+                    # Show sample results
+                    sample_codes = [record.get('code') for record in data['data'][:3]]
+                    print(f"      Sample results: {sample_codes}")
+                else:
+                    self.log_test("Search Bug - LG search", False, 
+                                "LG search returned 0 results (bug confirmed)")
+            else:
+                self.log_test("Search Bug - LG search", False, f"Status: {response.status_code}")
+        except Exception as e:
+            self.log_test("Search Bug - LG search", False, f"Error: {str(e)}")
+        
+        # Test lg search (lowercase)
+        try:
+            response = self.session.get(f"{self.base_url}/uw-data?search=lg")
+            if response.status_code == 200:
+                data = response.json()
+                if data['count'] > 0:
+                    self.log_test("Search Bug - lg search (lowercase)", True, 
+                                f"lg search works correctly - found {data['count']} records")
+                else:
+                    self.log_test("Search Bug - lg search (lowercase)", False, 
+                                "lg search returned 0 results (bug confirmed)")
+            else:
+                self.log_test("Search Bug - lg search (lowercase)", False, f"Status: {response.status_code}")
+        except Exception as e:
+            self.log_test("Search Bug - lg search (lowercase)", False, f"Error: {str(e)}")
+        
+        # Test XA search
+        try:
+            response = self.session.get(f"{self.base_url}/uw-data?search=XA")
+            if response.status_code == 200:
+                data = response.json()
+                if data['count'] > 0:
+                    self.log_test("Search Bug - XA search", True, 
+                                f"XA search works correctly - found {data['count']} records")
+                    # Show sample results
+                    sample_codes = [record.get('code') for record in data['data'][:3]]
+                    print(f"      Sample results: {sample_codes}")
+                else:
+                    self.log_test("Search Bug - XA search", False, 
+                                "XA search returned 0 results (bug confirmed)")
+            else:
+                self.log_test("Search Bug - XA search", False, f"Status: {response.status_code}")
+        except Exception as e:
+            self.log_test("Search Bug - XA search", False, f"Error: {str(e)}")
+        
+        # Test xa search (lowercase)
+        try:
+            response = self.session.get(f"{self.base_url}/uw-data?search=xa")
+            if response.status_code == 200:
+                data = response.json()
+                if data['count'] > 0:
+                    self.log_test("Search Bug - xa search (lowercase)", True, 
+                                f"xa search works correctly - found {data['count']} records")
+                else:
+                    self.log_test("Search Bug - xa search (lowercase)", False, 
+                                "xa search returned 0 results (bug confirmed)")
+            else:
+                self.log_test("Search Bug - xa search (lowercase)", False, f"Status: {response.status_code}")
+        except Exception as e:
+            self.log_test("Search Bug - xa search (lowercase)", False, f"Error: {str(e)}")
+        
+        # Test simple endpoint as well
+        try:
+            response = self.session.get(f"{self.base_url}/uw-data/simple?search=LG")
+            if response.status_code == 200:
+                data = response.json()
+                if data['count'] > 0:
+                    self.log_test("Search Bug - LG on simple endpoint", True, 
+                                f"LG search on /simple works - found {data['count']} records")
+                else:
+                    self.log_test("Search Bug - LG on simple endpoint", False, 
+                                "LG search on /simple returned 0 results")
+            else:
+                self.log_test("Search Bug - LG on simple endpoint", False, f"Status: {response.status_code}")
+        except Exception as e:
+            self.log_test("Search Bug - LG on simple endpoint", False, f"Error: {str(e)}")
+    
     def test_search_functionality_simple_endpoint(self):
         """Test search functionality on /simple endpoint - UW codes ONLY"""
         print("\n🔍 Testing UW-Only Search on /simple endpoint...")
