@@ -519,8 +519,22 @@ test_plan:
         agent: "testing"
         comment: "✅ VERIFIED: UW-only search functionality working perfectly! Tested all requirements: 1) UW code 'AZ' search finds 11 records including GOTO (✅), 2) Stock code 'GOTO' search returns 0 results (✅), 3) Company name 'Gojek' search returns 0 results (✅), 4) Case-insensitive UW search 'az' works (✅), 5) Both /api/uw-data and /api/uw-data/simple endpoints work correctly (✅). GOTO record confirmed to have exactly 13 underwriters as expected: ['AZ', 'C3', 'CC', 'CP', 'CS', 'D4', 'GR', 'KZ', 'LG', 'NI', 'PD', 'PP', 'RO']. Search behavior changed exactly as requested."
 
+  - task: "Search Bug Investigation - LG and XA searches"
+    implemented: true
+    working: true
+    file: "/app/backend/services/uw_service_grouped.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ SEARCH BUG INVESTIGATION COMPLETE: The reported search bug does NOT exist. Comprehensive testing confirms that searching for 'lg', 'LG', 'xa', and 'XA' works perfectly. Results: LG search finds 15 records (18 total), XA search finds 23 records (26 total), both case-insensitive searches work correctly. Database contains 32 unique underwriter codes including 'LG' and 'XA'. Sample records found: LG in CDIA, PSAT, MINE; XA in ASPR, BRRC, MHKI. Search implementation using MongoDB query {\"underwriters\": {\"$in\": [search.upper()]}} is functioning as designed. The user's report appears to be incorrect - search functionality is working properly."
+
 agent_communication:
   - agent: "main"
     message: "Fixed search functionality as requested by user. Modified backend service and router to search only in underwriters array using exact match with uppercase conversion. Removed stock code and company name search capabilities. Updated frontend placeholder text to indicate UW-only search. Ready for backend testing to verify the fix works correctly."
   - agent: "testing"
     message: "✅ SEARCH FIX VERIFICATION COMPLETE: The UW-only search functionality is working perfectly! All test requirements passed: UW code searches work (AZ finds 11 records including GOTO), stock code searches return 0 results (GOTO search disabled), company name searches return 0 results (Gojek search disabled), case-insensitive UW search works (az=AZ), and both /api/uw-data and /api/uw-data/simple endpoints behave correctly. GOTO record confirmed with exactly 13 underwriters as expected. The search behavior has changed exactly as requested - it now searches ONLY by underwriter codes."
+  - agent: "testing"
+    message: "🔍 SEARCH BUG INVESTIGATION RESULTS: The reported search bug for 'lg' and 'xa' searches does NOT exist. Comprehensive testing shows: 1) LG search returns 15 records (total 18), 2) XA search returns 23 records (total 26), 3) Both case-insensitive searches work correctly, 4) Database contains proper data with LG and XA codes, 5) Search implementation is functioning correctly. The user's report appears to be incorrect. All search functionality is working as designed. No bug found."
