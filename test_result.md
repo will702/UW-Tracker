@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Implement data management and delete functionality: 1) Clear all existing test data, 2) Import fresh data from new JSON file, 3) Add admin-only delete functionality with confirmation dialogs"
+user_problem_statement: "Fix search functionality to search only based on underwriter code, not stock names or company names"
 
 backend:
   - task: "API Health Check"
