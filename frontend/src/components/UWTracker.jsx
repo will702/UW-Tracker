@@ -349,19 +349,115 @@ const UWTracker = () => {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-gray-50">
-                    <TableHead className="font-semibold text-gray-900">UW</TableHead>
-                    <TableHead className="font-semibold text-gray-900">Kode</TableHead>
-                    <TableHead className="font-semibold text-gray-900">Nama Perusahaan</TableHead>
-                    <TableHead className="font-semibold text-gray-900">Harga IPO</TableHead>
-                    <TableHead className="font-semibold text-gray-900">D+1</TableHead>
-                    <TableHead className="font-semibold text-gray-900">D+2</TableHead>
-                    <TableHead className="font-semibold text-gray-900">D+3</TableHead>
-                    <TableHead className="font-semibold text-gray-900">D+4</TableHead>
-                    <TableHead className="font-semibold text-gray-900">D+5</TableHead>
-                    <TableHead className="font-semibold text-gray-900">D+6</TableHead>
-                    <TableHead className="font-semibold text-gray-900">D+7</TableHead>
+                    <TableHead 
+                      className="font-semibold text-gray-900 cursor-pointer hover:bg-gray-100 select-none"
+                      onClick={() => handleSort('underwriters')}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span>UW</span>
+                        {getSortIcon('underwriters')}
+                      </div>
+                    </TableHead>
+                    <TableHead 
+                      className="font-semibold text-gray-900 cursor-pointer hover:bg-gray-100 select-none"
+                      onClick={() => handleSort('code')}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span>Kode</span>
+                        {getSortIcon('code')}
+                      </div>
+                    </TableHead>
+                    <TableHead 
+                      className="font-semibold text-gray-900 cursor-pointer hover:bg-gray-100 select-none"
+                      onClick={() => handleSort('companyName')}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span>Nama Perusahaan</span>
+                        {getSortIcon('companyName')}
+                      </div>
+                    </TableHead>
+                    <TableHead 
+                      className="font-semibold text-gray-900 cursor-pointer hover:bg-gray-100 select-none"
+                      onClick={() => handleSort('ipoPrice')}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span>Harga IPO</span>
+                        {getSortIcon('ipoPrice')}
+                      </div>
+                    </TableHead>
+                    <TableHead 
+                      className="font-semibold text-gray-900 cursor-pointer hover:bg-gray-100 select-none"
+                      onClick={() => handleSort('returnD1')}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span>D+1</span>
+                        {getSortIcon('returnD1')}
+                      </div>
+                    </TableHead>
+                    <TableHead 
+                      className="font-semibold text-gray-900 cursor-pointer hover:bg-gray-100 select-none"
+                      onClick={() => handleSort('returnD2')}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span>D+2</span>
+                        {getSortIcon('returnD2')}
+                      </div>
+                    </TableHead>
+                    <TableHead 
+                      className="font-semibold text-gray-900 cursor-pointer hover:bg-gray-100 select-none"
+                      onClick={() => handleSort('returnD3')}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span>D+3</span>
+                        {getSortIcon('returnD3')}
+                      </div>
+                    </TableHead>
+                    <TableHead 
+                      className="font-semibold text-gray-900 cursor-pointer hover:bg-gray-100 select-none"
+                      onClick={() => handleSort('returnD4')}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span>D+4</span>
+                        {getSortIcon('returnD4')}
+                      </div>
+                    </TableHead>
+                    <TableHead 
+                      className="font-semibold text-gray-900 cursor-pointer hover:bg-gray-100 select-none"
+                      onClick={() => handleSort('returnD5')}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span>D+5</span>
+                        {getSortIcon('returnD5')}
+                      </div>
+                    </TableHead>
+                    <TableHead 
+                      className="font-semibold text-gray-900 cursor-pointer hover:bg-gray-100 select-none"
+                      onClick={() => handleSort('returnD6')}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span>D+6</span>
+                        {getSortIcon('returnD6')}
+                      </div>
+                    </TableHead>
+                    <TableHead 
+                      className="font-semibold text-gray-900 cursor-pointer hover:bg-gray-100 select-none"
+                      onClick={() => handleSort('returnD7')}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span>D+7</span>
+                        {getSortIcon('returnD7')}
+                      </div>
+                    </TableHead>
                     <TableHead className="font-semibold text-gray-900">Papan</TableHead>
-                    <TableHead className="font-semibold text-gray-900">Tanggal Listing</TableHead>
+                    <TableHead 
+                      className="font-semibold text-gray-900 cursor-pointer hover:bg-gray-100 select-none"
+                      onClick={() => handleSort('listingDate')}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span>Tanggal Listing</span>
+                        {getSortIcon('listingDate')}
+                      </div>
+                    </TableHead>
                     <TableHead className="font-semibold text-gray-900">Record</TableHead>
                   </TableRow>
                 </TableHeader>
