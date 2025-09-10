@@ -99,8 +99,17 @@ class UWServiceGrouped:
 
             update_dict["updatedAt"] = datetime.utcnow()
 
+            # Try to convert to ObjectId if it looks like one, otherwise use as string
+            query_id = record_id
+            if len(record_id) == 24:
+                try:
+                    query_id = ObjectId(record_id)
+                except:
+                    # If ObjectId conversion fails, use as string
+                    query_id = record_id
+
             result = await self.collection.find_one_and_update(
-                {"_id": record_id},
+                {"_id": query_id},
                 {"$set": update_dict},
                 return_document=True
             )
