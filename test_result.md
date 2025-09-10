@@ -531,6 +531,21 @@ test_plan:
         agent: "testing"
         comment: "✅ SEARCH BUG INVESTIGATION COMPLETE: The reported search bug does NOT exist. Comprehensive testing confirms that searching for 'lg', 'LG', 'xa', and 'XA' works perfectly. Results: LG search finds 15 records (18 total), XA search finds 23 records (26 total), both case-insensitive searches work correctly. Database contains 32 unique underwriter codes including 'LG' and 'XA'. Sample records found: LG in CDIA, PSAT, MINE; XA in ASPR, BRRC, MHKI. Search implementation using MongoDB query {\"underwriters\": {\"$in\": [search.upper()]}} is functioning as designed. The user's report appears to be incorrect - search functionality is working properly."
 
+  - task: "DELETE Functionality - ObjectId Format Fix"
+    implemented: true
+    working: true
+    file: "/app/backend/services/uw_service_grouped.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "CRITICAL ISSUE IDENTIFIED: Delete functionality was failing for existing records with ObjectId format (24-character hex IDs like '68bf0a4f59031d75a8db8615'). The issue was two-fold: 1) Backend service was not importing or using bson.ObjectId for proper MongoDB ID conversion, 2) Pydantic model had validation error where listingBoard field was required but existing records had None values. This caused 500 errors when trying to GET/DELETE existing records."
+      - working: true
+        agent: "testing"
+        comment: "✅ FIXED: Added proper ObjectId import and conversion logic in uw_service_grouped.py. Modified get_record_by_id, delete_record, and update_record methods to handle both UUID format (new records) and ObjectId format (existing records) by detecting ID length and attempting ObjectId conversion. Fixed Pydantic model validation by making listingBoard field Optional. Comprehensive testing confirms 100% success rate: UUID delete workflow ✅, ObjectId delete workflow ✅, Invalid ID handling ✅, Statistics update after delete ✅. All delete functionality now works correctly for both ID formats."
+
 agent_communication:
   - agent: "main"
     message: "Fixed search functionality as requested by user. Modified backend service and router to search only in underwriters array using exact match with uppercase conversion. Removed stock code and company name search capabilities. Updated frontend placeholder text to indicate UW-only search. Ready for backend testing to verify the fix works correctly."
