@@ -52,7 +52,7 @@ const UWTracker = () => {
       setIsSearching(true);
       setError(null);
       
-      const response = await uwAPI.getAllRecords(search, 100, 0);
+      const response = await uwAPI.getAllRecords(search, 1000, 0);
       setUwData(response.data || []);
       setDisplayedCount(response.count || 0);
     } catch (err) {
