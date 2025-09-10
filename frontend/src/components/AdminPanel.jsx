@@ -258,8 +258,22 @@ const AdminPanel = () => {
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-8">
       <div className="text-center">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Panel</h1>
-        <p className="text-gray-600">Kelola data underwriter IPO</p>
+        <div className="flex justify-between items-center mb-4">
+          <div></div>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Panel</h1>
+            <p className="text-gray-600">Kelola data underwriter IPO</p>
+          </div>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => setIsAuthenticated(false)}
+            className="flex items-center space-x-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+          >
+            <LogOut className="h-4 w-4" />
+            <span>Logout</span>
+          </Button>
+        </div>
       </div>
 
       {/* Messages */}
