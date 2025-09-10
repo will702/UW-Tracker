@@ -12,10 +12,10 @@ const apiClient = axios.create({
   },
 });
 
-// Request interceptor for logging
+// Request interceptor for logging (disabled in production)
 apiClient.interceptors.request.use(
   (config) => {
-    console.log(`API Request: ${config.method?.toUpperCase()} ${config.url}`);
+    // console.log(`API Request: ${config.method?.toUpperCase()} ${config.url}`);
     return config;
   },
   (error) => {
