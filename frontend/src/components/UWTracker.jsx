@@ -32,6 +32,8 @@ const UWTracker = () => {
     key: null,
     direction: 'asc'
   });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(200);
 
   // Debounced search function
   const debounce = useCallback((func, wait) => {
