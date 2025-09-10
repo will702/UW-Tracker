@@ -78,13 +78,45 @@ const UWTracker = () => {
     }
   }, []);
 
-  // Sorting functionality
+  // Pagination functionality
+  const totalPages = Math.ceil(uwData.length / itemsPerPage);
+  
+  // Get current page data from sorted data
+  const paginatedData = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return sortedData.slice(startIndex, endIndex);
+  }, [sortedData, currentPage, itemsPerPage]);
+
+  // Calculate displayed range
+  const displayedRange = useMemo(() => {
+    if (uwData.length === 0) return { start: 0, end: 0, total: 0 };
+    
+    const start = (currentPage - 1) * itemsPerPage + 1;
+    const end = Math.min(currentPage * itemsPerPage, uwData.length);
+    return { start, end, total: uwData.length };
+  }, [currentPage, itemsPerPage, uwData.length]);
+
+  // Handle page change
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    // Scroll to top when page changes
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Reset to page 1 when search changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
+  // Reset to page 1 when sorting changes
   const handleSort = (key) => {
     let direction = 'asc';
     if (sortConfig.key === key && sortConfig.direction === 'asc') {
       direction = 'desc';
     }
     setSortConfig({ key, direction });
+    setCurrentPage(1); // Reset to first page when sorting
   };
 
   // Sort data based on current sort configuration
