@@ -350,8 +350,9 @@ const UWTracker = () => {
                 <TableHeader>
                   <TableRow className="bg-gray-50">
                     <TableHead 
-                      className="font-semibold text-gray-900 cursor-pointer hover:bg-gray-100 select-none"
+                      className="font-semibold text-gray-900 cursor-pointer hover:bg-gray-100 select-none transition-colors"
                       onClick={() => handleSort('underwriters')}
+                      title="Klik untuk sort berdasarkan UW (A-Z / Z-A)"
                     >
                       <div className="flex items-center justify-between">
                         <span>UW</span>
@@ -359,8 +360,9 @@ const UWTracker = () => {
                       </div>
                     </TableHead>
                     <TableHead 
-                      className="font-semibold text-gray-900 cursor-pointer hover:bg-gray-100 select-none"
+                      className="font-semibold text-gray-900 cursor-pointer hover:bg-gray-100 select-none transition-colors"
                       onClick={() => handleSort('code')}
+                      title="Klik untuk sort berdasarkan Kode Saham (A-Z / Z-A)"
                     >
                       <div className="flex items-center justify-between">
                         <span>Kode</span>
@@ -368,8 +370,9 @@ const UWTracker = () => {
                       </div>
                     </TableHead>
                     <TableHead 
-                      className="font-semibold text-gray-900 cursor-pointer hover:bg-gray-100 select-none"
+                      className="font-semibold text-gray-900 cursor-pointer hover:bg-gray-100 select-none transition-colors"
                       onClick={() => handleSort('companyName')}
+                      title="Klik untuk sort berdasarkan Nama Perusahaan (A-Z / Z-A)"
                     >
                       <div className="flex items-center justify-between">
                         <span>Nama Perusahaan</span>
@@ -377,8 +380,9 @@ const UWTracker = () => {
                       </div>
                     </TableHead>
                     <TableHead 
-                      className="font-semibold text-gray-900 cursor-pointer hover:bg-gray-100 select-none"
+                      className="font-semibold text-gray-900 cursor-pointer hover:bg-gray-100 select-none transition-colors"
                       onClick={() => handleSort('ipoPrice')}
+                      title="Klik untuk sort berdasarkan Harga IPO (Terbesar-Terkecil / Terkecil-Terbesar)"
                     >
                       <div className="flex items-center justify-between">
                         <span>Harga IPO</span>
@@ -386,8 +390,9 @@ const UWTracker = () => {
                       </div>
                     </TableHead>
                     <TableHead 
-                      className="font-semibold text-gray-900 cursor-pointer hover:bg-gray-100 select-none"
+                      className="font-semibold text-gray-900 cursor-pointer hover:bg-gray-100 select-none transition-colors"
                       onClick={() => handleSort('returnD1')}
+                      title="Klik untuk sort berdasarkan Return D+1 (Terbesar-Terkecil / Terkecil-Terbesar)"
                     >
                       <div className="flex items-center justify-between">
                         <span>D+1</span>
@@ -395,8 +400,9 @@ const UWTracker = () => {
                       </div>
                     </TableHead>
                     <TableHead 
-                      className="font-semibold text-gray-900 cursor-pointer hover:bg-gray-100 select-none"
+                      className="font-semibold text-gray-900 cursor-pointer hover:bg-gray-100 select-none transition-colors"
                       onClick={() => handleSort('returnD2')}
+                      title="Klik untuk sort berdasarkan Return D+2 (Terbesar-Terkecil / Terkecil-Terbesar)"
                     >
                       <div className="flex items-center justify-between">
                         <span>D+2</span>
@@ -404,8 +410,9 @@ const UWTracker = () => {
                       </div>
                     </TableHead>
                     <TableHead 
-                      className="font-semibold text-gray-900 cursor-pointer hover:bg-gray-100 select-none"
+                      className="font-semibold text-gray-900 cursor-pointer hover:bg-gray-100 select-none transition-colors"
                       onClick={() => handleSort('returnD3')}
+                      title="Klik untuk sort berdasarkan Return D+3 (Terbesar-Terkecil / Terkecil-Terbesar)"
                     >
                       <div className="flex items-center justify-between">
                         <span>D+3</span>
@@ -413,8 +420,9 @@ const UWTracker = () => {
                       </div>
                     </TableHead>
                     <TableHead 
-                      className="font-semibold text-gray-900 cursor-pointer hover:bg-gray-100 select-none"
+                      className="font-semibold text-gray-900 cursor-pointer hover:bg-gray-100 select-none transition-colors"
                       onClick={() => handleSort('returnD4')}
+                      title="Klik untuk sort berdasarkan Return D+4 (Terbesar-Terkecil / Terkecil-Terbesar)"
                     >
                       <div className="flex items-center justify-between">
                         <span>D+4</span>
@@ -422,8 +430,9 @@ const UWTracker = () => {
                       </div>
                     </TableHead>
                     <TableHead 
-                      className="font-semibold text-gray-900 cursor-pointer hover:bg-gray-100 select-none"
+                      className="font-semibold text-gray-900 cursor-pointer hover:bg-gray-100 select-none transition-colors"
                       onClick={() => handleSort('returnD5')}
+                      title="Klik untuk sort berdasarkan Return D+5 (Terbesar-Terkecil / Terkecil-Terbesar)"
                     >
                       <div className="flex items-center justify-between">
                         <span>D+5</span>
@@ -431,8 +440,9 @@ const UWTracker = () => {
                       </div>
                     </TableHead>
                     <TableHead 
-                      className="font-semibold text-gray-900 cursor-pointer hover:bg-gray-100 select-none"
+                      className="font-semibold text-gray-900 cursor-pointer hover:bg-gray-100 select-none transition-colors"
                       onClick={() => handleSort('returnD6')}
+                      title="Klik untuk sort berdasarkan Return D+6 (Terbesar-Terkecil / Terkecil-Terbesar)"
                     >
                       <div className="flex items-center justify-between">
                         <span>D+6</span>
@@ -440,8 +450,9 @@ const UWTracker = () => {
                       </div>
                     </TableHead>
                     <TableHead 
-                      className="font-semibold text-gray-900 cursor-pointer hover:bg-gray-100 select-none"
+                      className="font-semibold text-gray-900 cursor-pointer hover:bg-gray-100 select-none transition-colors"
                       onClick={() => handleSort('returnD7')}
+                      title="Klik untuk sort berdasarkan Return D+7 (Terbesar-Terkecil / Terkecil-Terbesar)"
                     >
                       <div className="flex items-center justify-between">
                         <span>D+7</span>
@@ -450,8 +461,9 @@ const UWTracker = () => {
                     </TableHead>
                     <TableHead className="font-semibold text-gray-900">Papan</TableHead>
                     <TableHead 
-                      className="font-semibold text-gray-900 cursor-pointer hover:bg-gray-100 select-none"
+                      className="font-semibold text-gray-900 cursor-pointer hover:bg-gray-100 select-none transition-colors"
                       onClick={() => handleSort('listingDate')}
+                      title="Klik untuk sort berdasarkan Tanggal Listing (⬇️ Terbaru / ⬆️ Terlama)"
                     >
                       <div className="flex items-center justify-between">
                         <span>Tanggal Listing</span>
