@@ -106,10 +106,6 @@ const PasswordProtection = ({ onAuthenticated }) => {
             <p className="text-sm text-gray-500">
               Hanya administrator yang berwenang dapat mengakses panel ini
             </p>
-            {/* Development hint - remove in production */}
-            <p className="text-xs text-gray-400 mt-2 italic">
-              Demo: Password adalah "admin123"
-            </p>
           </div>
         </CardContent>
       </Card>
