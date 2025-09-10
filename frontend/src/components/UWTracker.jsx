@@ -54,7 +54,7 @@ const UWTracker = () => {
       setIsSearching(true);
       setError(null);
       
-      const response = await uwAPI.getAllRecords(search, 1000, 0);
+      const response = await uwAPI.getAllRecords(search, 1000, 0); // Get all data for client-side pagination
       setUwData(response.data || []);
       setDisplayedCount(response.count || 0);
     } catch (err) {
