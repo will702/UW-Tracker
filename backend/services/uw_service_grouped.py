@@ -193,7 +193,16 @@ class UWServiceGrouped:
     async def get_record_by_id(self, record_id: str) -> Optional[UWRecordGrouped]:
         """Get a single record by ID"""
         try:
-            record = await self.collection.find_one({"_id": record_id})
+            # Try to convert to ObjectId if it looks like one, otherwise use as string
+            query_id = record_id
+            if len(record_id) == 24:
+                try:
+                    query_id = ObjectId(record_id)
+                except:
+                    # If ObjectId conversion fails, use as string
+                    query_id = record_id
+            
+            record = await self.collection.find_one({"_id": query_id})
             if record:
                 record["_id"] = str(record["_id"])
                 return UWRecordGrouped(**record)
