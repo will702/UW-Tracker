@@ -8,6 +8,7 @@ from datetime import datetime
 import logging
 from pymongo import ASCENDING, TEXT
 from pymongo.errors import DuplicateKeyError
+from bson import ObjectId
 
 logger = logging.getLogger(__name__)
 
