@@ -698,6 +698,9 @@ const UWTracker = () => {
               </Table>
             </div>
           )}
+          
+          {/* Pagination */}
+          {uwData.length > 0 && <Pagination />}
         </Card>
 
         {/* Footer with last updated info */}
