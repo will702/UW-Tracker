@@ -245,6 +245,16 @@ const AdminPanel = () => {
     setBulkData(JSON.stringify(sample, null, 2));
   };
 
+  // Handle authentication
+  const handleAuthenticated = () => {
+    setIsAuthenticated(true);
+  };
+
+  // If not authenticated, show password protection
+  if (!isAuthenticated) {
+    return <PasswordProtection onAuthenticated={handleAuthenticated} />;
+  }
+
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-8">
       <div className="text-center">
