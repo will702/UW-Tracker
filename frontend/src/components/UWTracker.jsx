@@ -436,7 +436,7 @@ const UWTracker = () => {
               <div className="text-sm text-gray-600">Total Data</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-indigo-600">{displayedCount}</div>
+              <div className="text-2xl font-bold text-indigo-600">{displayedRange.end - displayedRange.start + 1}</div>
               <div className="text-sm text-gray-600">Menampilkan</div>
             </div>
             <div className="text-center">
