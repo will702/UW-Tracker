@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Search, FileText, TrendingUp, RefreshCw, Plus, AlertCircle, ChevronUp, ChevronDown, ArrowUpDown } from 'lucide-react';
+import { Search, FileText, TrendingUp, RefreshCw, Plus, AlertCircle, ChevronUp, ChevronDown, ArrowUpDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Input } from './ui/input';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
