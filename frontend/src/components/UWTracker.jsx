@@ -153,6 +153,17 @@ const UWTracker = () => {
     return sortableData;
   }, [uwData, sortConfig]);
 
+  // Get sort icon for header
+  const getSortIcon = (columnKey) => {
+    if (sortConfig.key !== columnKey) {
+      return <ArrowUpDown className="h-4 w-4 text-gray-400" />;
+    }
+    
+    return sortConfig.direction === 'asc' 
+      ? <ChevronUp className="h-4 w-4 text-indigo-600" />
+      : <ChevronDown className="h-4 w-4 text-indigo-600" />;
+  };
+
   // Debounced search handler
   const debouncedSearch = useMemo(
     () => debounce((searchValue) => fetchUWData(searchValue), 300),
