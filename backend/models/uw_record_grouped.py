@@ -16,7 +16,7 @@ class UWRecordGrouped(BaseModel):
     returnD5: Optional[float] = Field(None, description="Return on D+5")
     returnD6: Optional[float] = Field(None, description="Return on D+6")
     returnD7: Optional[float] = Field(None, description="Return on D+7")
-    listingBoard: str = Field(..., description="Listing board (Utama, Pengembangan, Akselerasi)")
+    listingBoard: Optional[str] = Field(None, description="Listing board (Utama, Pengembangan, Akselerasi)")
     listingDate: datetime = Field(..., description="Listing date")
     record: Optional[str] = Field(None, description="Performance record")
     createdAt: datetime = Field(default_factory=datetime.utcnow)
