@@ -27,7 +27,7 @@ const PasswordProtection = ({ onAuthenticated }) => {
       setIsLoading(false);
       onAuthenticated();
     } else {
-      setError('Password salah. Silakan coba lagi.');
+      setError('Password tidak valid. Akses ditolak.');
       setPassword('');
       setIsLoading(false);
     }
