@@ -28,6 +28,10 @@ const UWTracker = () => {
   });
   const [error, setError] = useState(null);
   const [displayedCount, setDisplayedCount] = useState(0);
+  const [sortConfig, setSortConfig] = useState({
+    key: null,
+    direction: 'asc'
+  });
 
   // Debounced search function
   const debounce = useCallback((func, wait) => {
