@@ -119,7 +119,16 @@ class UWServiceGrouped:
     async def delete_record(self, record_id: str) -> bool:
         """Delete a UW record"""
         try:
-            result = await self.collection.delete_one({"_id": record_id})
+            # Try to convert to ObjectId if it looks like one, otherwise use as string
+            query_id = record_id
+            if len(record_id) == 24:
+                try:
+                    query_id = ObjectId(record_id)
+                except:
+                    # If ObjectId conversion fails, use as string
+                    query_id = record_id
+            
+            result = await self.collection.delete_one({"_id": query_id})
             success = result.deleted_count > 0
             
             if success:
