@@ -277,6 +277,8 @@ const UWTracker = () => {
       </div>
     );
   };
+
+  // Get sort icon for header
   const getSortIcon = (columnKey) => {
     if (sortConfig.key !== columnKey) {
       return <ArrowUpDown className="h-4 w-4 text-gray-400" />;
