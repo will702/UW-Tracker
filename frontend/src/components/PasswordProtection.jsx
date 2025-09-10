@@ -12,8 +12,8 @@ const PasswordProtection = ({ onAuthenticated }) => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  // Password untuk admin (dalam production sebaiknya disimpan di backend dengan hash)
-  const ADMIN_PASSWORD = 'admin123';
+  // Password untuk admin - PRODUCTION PASSWORD
+  const ADMIN_PASSWORD = 'UW2024$Admin#Secure';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
