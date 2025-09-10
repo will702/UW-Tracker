@@ -636,7 +636,7 @@ const UWTracker = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {sortedData.map((item) => (
+                  {paginatedData.map((item) => (
                     <TableRow key={item._id} className="hover:bg-gray-50">
                       <TableCell className="font-medium text-indigo-600">
                         {Array.isArray(item.underwriters) ? (
