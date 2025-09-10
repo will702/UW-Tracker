@@ -323,6 +323,43 @@ const UWTracker = () => {
               <div className="text-sm text-gray-600">Total Perusahaan</div>
             </div>
           </div>
+          
+          {/* Sorting Info */}
+          {sortConfig.key && (
+            <div className="mt-4 text-center">
+              <div className="inline-flex items-center space-x-2 text-sm text-gray-600 bg-blue-50 px-3 py-1 rounded-full">
+                <span>Diurutkan berdasarkan:</span>
+                <span className="font-medium text-indigo-600">
+                  {sortConfig.key === 'underwriters' && 'UW'}
+                  {sortConfig.key === 'code' && 'Kode Saham'}
+                  {sortConfig.key === 'companyName' && 'Nama Perusahaan'}
+                  {sortConfig.key === 'ipoPrice' && 'Harga IPO'}
+                  {sortConfig.key === 'returnD1' && 'Return D+1'}
+                  {sortConfig.key === 'returnD2' && 'Return D+2'}
+                  {sortConfig.key === 'returnD3' && 'Return D+3'}
+                  {sortConfig.key === 'returnD4' && 'Return D+4'}
+                  {sortConfig.key === 'returnD5' && 'Return D+5'}
+                  {sortConfig.key === 'returnD6' && 'Return D+6'}
+                  {sortConfig.key === 'returnD7' && 'Return D+7'}
+                  {sortConfig.key === 'listingDate' && 'Tanggal Listing'}
+                </span>
+                <span className="text-indigo-500">
+                  {sortConfig.direction === 'asc' ? '↑' : '↓'}
+                  {(sortConfig.key === 'underwriters' || sortConfig.key === 'code' || sortConfig.key === 'companyName') 
+                    ? (sortConfig.direction === 'asc' ? ' (A-Z)' : ' (Z-A)')
+                    : (sortConfig.direction === 'asc' ? ' (Terkecil)' : ' (Terbesar)')
+                  }
+                </span>
+                <button
+                  onClick={() => setSortConfig({ key: null, direction: 'asc' })}
+                  className="text-gray-400 hover:text-gray-600 ml-2"
+                  title="Reset sorting"
+                >
+                  ×
+                </button>
+              </div>
+            </div>
+          )}
         </Card>
 
         {/* Data Table */}
