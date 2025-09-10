@@ -76,7 +76,93 @@ const UWTracker = () => {
     }
   }, []);
 
-  // Debounced search handler
+  // Sorting functionality
+  const handleSort = (key) => {
+    let direction = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  // Sort data based on current sort configuration
+  const sortedData = useMemo(() => {
+    if (!sortConfig.key) return uwData;
+
+    const sortableData = [...uwData];
+    
+    sortableData.sort((a, b) => {
+      let aValue, bValue;
+      
+      switch (sortConfig.key) {
+        case 'underwriters':
+          // Sort by first underwriter name
+          aValue = Array.isArray(a.underwriters) ? a.underwriters[0] || '' : (a.uw || a.underwriters || '');
+          bValue = Array.isArray(b.underwriters) ? b.underwriters[0] || '' : (b.uw || b.underwriters || '');
+          break;
+        case 'code':
+          aValue = a.code || '';
+          bValue = b.code || '';
+          break;
+        case 'companyName':
+          aValue = a.companyName || '';
+          bValue = b.companyName || '';
+          break;
+        case 'ipoPrice':
+          aValue = a.ipoPrice || 0;
+          bValue = b.ipoPrice || 0;
+          break;
+        case 'returnD1':
+        case 'returnD2':  
+        case 'returnD3':
+        case 'returnD4':
+        case 'returnD5':
+        case 'returnD6':
+        case 'returnD7':
+          aValue = a[sortConfig.key] || 0;
+          bValue = b[sortConfig.key] || 0;
+          break;
+        case 'listingDate':
+          aValue = new Date(a.listingDate || 0);
+          bValue = new Date(b.listingDate || 0);
+          break;
+        default:
+          aValue = a[sortConfig.key] || '';
+          bValue = b[sortConfig.key] || '';
+      }
+
+      // Handle different data types
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        // String comparison (case insensitive)
+        aValue = aValue.toLowerCase();
+        bValue = bValue.toLowerCase();
+        if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+        if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
+        return 0;
+      } else if (typeof aValue === 'number' && typeof bValue === 'number') {
+        // Number comparison
+        return sortConfig.direction === 'asc' ? aValue - bValue : bValue - aValue;
+      } else if (aValue instanceof Date && bValue instanceof Date) {
+        // Date comparison
+        return sortConfig.direction === 'asc' ? aValue - bValue : bValue - aValue;
+      }
+      
+      return 0;
+    });
+
+    return sortableData;
+  }, [uwData, sortConfig]);
+
+  // Get sort icon for header
+  const getSortIcon = (columnKey) => {
+    if (sortConfig.key !== columnKey) {
+      return <ArrowUpDown className="h-4 w-4 text-gray-400" />;
+    }
+    
+    return sortConfig.direction === 'asc' 
+      ? <ChevronUp className="h-4 w-4 text-indigo-600" />
+      : <ChevronDown className="h-4 w-4 text-indigo-600" />;
+  };
   const debouncedSearch = useMemo(
     () => debounce((searchValue) => fetchUWData(searchValue), 300),
     [debounce, fetchUWData]
