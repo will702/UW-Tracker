@@ -327,7 +327,7 @@ const UWTracker = () => {
 
         {/* Data Table */}
         <Card className="overflow-hidden">
-          {uwData.length === 0 && !isSearching ? (
+          {sortedData.length === 0 && !isSearching ? (
             <div className="text-center py-12">
               <TrendingUp className="h-12 w-12 text-gray-300 mx-auto mb-4" />
               <p className="text-gray-500">
