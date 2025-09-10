@@ -28,8 +28,10 @@ import {
   AlertDialogTrigger,
 } from './ui/alert-dialog';
 import { uwAPI, formatReturn, formatPrice, formatDate } from '../services/api';
+import PasswordProtection from './PasswordProtection';
 
 const AdminPanel = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAddingRecord, setIsAddingRecord] = useState(false);
   const [isBulkUploading, setIsBulkUploading] = useState(false);
   const [isManagingData, setIsManagingData] = useState(false);
