@@ -645,7 +645,12 @@ const AdminPanel = () => {
                                 <AlertDialogDescription>
                                   Apakah Anda yakin ingin menghapus record ini?
                                   <br />
-                                  <strong>{item.uw} - {item.code} ({item.companyName})</strong>
+                                  <strong>
+                                    {Array.isArray(item.underwriters) 
+                                      ? item.underwriters.join(', ') 
+                                      : (item.uw || item.underwriters)
+                                    } - {item.code} ({item.companyName})
+                                  </strong>
                                   <br />
                                   Tindakan ini tidak dapat dibatalkan.
                                 </AlertDialogDescription>
