@@ -462,7 +462,7 @@ const UWTracker = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {uwData.map((item) => (
+                  {sortedData.map((item) => (
                     <TableRow key={item._id} className="hover:bg-gray-50">
                       <TableCell className="font-medium text-indigo-600">
                         {Array.isArray(item.underwriters) ? (
