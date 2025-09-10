@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Fix search functionality for non-available data like 'lg' or 'xa' although the data exists - searching for existing underwriter codes was not returning results due to backend bug"
+user_problem_statement: "1) Perbaiki delete function, 2) Tambahkan password di bagian admin sehingga tidak sembarang orang bisa mengatur/mengubah data"
 
 backend:
   - task: "API Health Check"
