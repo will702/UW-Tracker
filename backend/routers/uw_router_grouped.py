@@ -28,7 +28,7 @@ router = APIRouter(prefix="/uw-data", tags=["UW Records (Grouped)"])
 
 @router.get("/simple")
 async def get_simple_records(
-    limit: int = Query(10, ge=1, le=100),
+    limit: int = Query(10, ge=1, le=1000),
     search: Optional[str] = Query(None, description="Search term"),
     service: UWServiceGrouped = Depends(get_uw_service)
 ):
