@@ -79,6 +79,28 @@ const UWTracker = () => {
     }
   }, []);
 
+  // Calculate average return 7 days for each record
+  const dataWithAvgReturn = useMemo(() => {
+    return uwData.map(record => {
+      const returns = [];
+      ['returnD1', 'returnD2', 'returnD3', 'returnD4', 'returnD5', 'returnD6', 'returnD7'].forEach(key => {
+        const value = record[key];
+        if (value !== null && value !== undefined && !isNaN(value)) {
+          returns.push(parseFloat(value));
+        }
+      });
+      
+      const avgReturn7Days = returns.length > 0 
+        ? returns.reduce((sum, val) => sum + val, 0) / returns.length 
+        : 0;
+      
+      return {
+        ...record,
+        avgReturn7Days
+      };
+    });
+  }, [uwData]);
+
   // Sorting functionality - Sort data based on current sort configuration
   const sortedData = useMemo(() => {
     if (!sortConfig.key) return uwData;
