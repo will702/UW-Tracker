@@ -268,12 +268,12 @@ const UWRanking = () => {
                     <TableHead className="font-semibold text-gray-900">Underwriter</TableHead>
                     <TableHead className="font-semibold text-gray-900 text-center">Total Deals</TableHead>
                     <TableHead 
-                      className="font-semibold text-gray-900 cursor-pointer hover:bg-gray-100 select-none transition-colors text-center"
+                      className="font-semibold text-gray-900 cursor-pointer hover:bg-gray-100 select-none transition-colors text-center bg-indigo-50"
                       onClick={() => handleSort('avgReturn7Days')}
-                      title="Average Return 7 Days After IPO"
+                      title="Klik untuk sort berdasarkan Average Return 7 Hari (Terbesar ke Terkecil / Terkecil ke Terbesar)"
                     >
                       <div className="flex items-center justify-center space-x-1">
-                        <span>Avg 7-Day Return</span>
+                        <span className="font-bold text-indigo-700">Average Return 7 Hari</span>
                         {getSortIcon('avgReturn7Days')}
                       </div>
                     </TableHead>
