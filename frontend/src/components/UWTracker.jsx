@@ -658,6 +658,16 @@ const UWTracker = () => {
                         {getSortIcon('returnD7')}
                       </div>
                     </TableHead>
+                    <TableHead 
+                      className="font-semibold text-gray-900 cursor-pointer hover:bg-gray-100 select-none transition-colors bg-yellow-50"
+                      onClick={() => handleSort('avgReturn7Days')}
+                      title="Klik untuk sort berdasarkan Average Return 7 Hari (Terbesar-Terkecil / Terkecil-Terbesar)"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-orange-700">Avg 7D</span>
+                        {getSortIcon('avgReturn7Days')}
+                      </div>
+                    </TableHead>
                     <TableHead className="font-semibold text-gray-900">Papan</TableHead>
                     <TableHead 
                       className="font-semibold text-gray-900 cursor-pointer hover:bg-gray-100 select-none transition-colors"
