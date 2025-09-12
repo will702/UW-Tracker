@@ -171,8 +171,9 @@ const UWRanking = () => {
   // Format percentage
   const formatPercent = (value) => {
     if (value === null || value === undefined || isNaN(value)) return '-';
+    const percentage = (value * 100).toFixed(2); // Multiply by 100 for correct percentage
     const color = value >= 0 ? 'text-green-600' : 'text-red-600';
-    return <span className={color}>{value.toFixed(2)}%</span>;
+    return <span className={color}>{value > 0 ? `+${percentage}%` : `${percentage}%`}</span>;
   };
 
   if (isLoading) {
