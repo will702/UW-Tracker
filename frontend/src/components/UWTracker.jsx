@@ -103,7 +103,7 @@ const UWTracker = () => {
 
   // Sorting functionality - Sort data based on current sort configuration
   const sortedData = useMemo(() => {
-    if (!sortConfig.key) return uwData;
+    if (!sortConfig.key) return dataWithAvgReturn;
 
     const sortableData = [...uwData];
     
