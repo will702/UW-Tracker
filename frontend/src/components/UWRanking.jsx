@@ -188,6 +188,16 @@ const UWRanking = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Back Navigation */}
+        <div className="mb-6">
+          <Link to="/">
+            <Button variant="outline" className="flex items-center space-x-2">
+              <ArrowLeft className="h-4 w-4" />
+              <span>Kembali ke Data Table</span>
+            </Button>
+          </Link>
+        </div>
+
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center space-x-3 mb-4">
