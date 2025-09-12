@@ -3,6 +3,7 @@ import "./App.css";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import UWTracker from "./components/UWTracker";
 import AdminPanel from "./components/AdminPanel";
+import UWRanking from "./components/UWRanking";
 import { Button } from "./components/ui/button";
 import { Settings } from "lucide-react";
 
