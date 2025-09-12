@@ -399,9 +399,19 @@ const UWTracker = () => {
           <h2 className="text-3xl font-bold text-gray-900 mb-4">
             Track Record Underwriter IPO Indonesia
           </h2>
-          <p className="text-gray-600 mb-8">
+          <p className="text-gray-600 mb-6">
             Analisis performa historis underwriter IPO berdasarkan data listing dan performa saham
           </p>
+
+          {/* Navigation Buttons */}
+          <div className="flex items-center justify-center space-x-4 mb-8">
+            <Link to="/ranking">
+              <Button variant="outline" className="flex items-center space-x-2">
+                <Target className="h-4 w-4" />
+                <span>Ranking Performance UW</span>
+              </Button>
+            </Link>
+          </div>
 
           {/* Search Bar */}
           <div className="max-w-md mx-auto relative">
