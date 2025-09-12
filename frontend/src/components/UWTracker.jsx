@@ -726,6 +726,9 @@ const UWTracker = () => {
                       <TableCell className={`font-medium ${getReturnColor(item.returnD7)}`}>
                         {formatReturn(item.returnD7)}
                       </TableCell>
+                      <TableCell className={`font-bold text-center bg-yellow-50 ${getReturnColor(item.avgReturn7Days)}`}>
+                        {formatReturn(item.avgReturn7Days)}
+                      </TableCell>
                       <TableCell>
                         <Badge className={getBoardBadgeColor(item.listingBoard)}>
                           {item.listingBoard}
