@@ -105,7 +105,7 @@ const UWTracker = () => {
   const sortedData = useMemo(() => {
     if (!sortConfig.key) return dataWithAvgReturn;
 
-    const sortableData = [...uwData];
+    const sortableData = [...dataWithAvgReturn];
     
     sortableData.sort((a, b) => {
       let aValue, bValue;
