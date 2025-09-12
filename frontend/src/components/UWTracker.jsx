@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Search, FileText, TrendingUp, RefreshCw, Plus, AlertCircle, ChevronUp, ChevronDown, ArrowUpDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, FileText, TrendingUp, RefreshCw, Plus, AlertCircle, ChevronUp, ChevronDown, ArrowUpDown, ChevronLeft, ChevronRight, Target } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Input } from './ui/input';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
