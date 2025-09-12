@@ -503,6 +503,7 @@ const UWTracker = () => {
                   {sortConfig.key === 'returnD5' && 'Return D+5'}
                   {sortConfig.key === 'returnD6' && 'Return D+6'}
                   {sortConfig.key === 'returnD7' && 'Return D+7'}
+                  {sortConfig.key === 'avgReturn7Days' && 'Average Return 7 Hari'}
                   {sortConfig.key === 'listingDate' && 'Tanggal Listing'}
                 </span>
                 <span className="text-indigo-500">
