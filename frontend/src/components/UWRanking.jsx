@@ -360,8 +360,10 @@ const UWRanking = () => {
                           {uw.totalDeals}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-center font-medium">
-                        {formatPercent(uw.avgReturn7Days)}
+                      <TableCell className="text-center font-bold text-lg bg-indigo-50">
+                        <div className="flex items-center justify-center">
+                          {formatPercent(uw.avgReturn7Days)}
+                        </div>
                       </TableCell>
                       <TableCell className="text-center">{formatPercent(uw.avgReturns.D1)}</TableCell>
                       <TableCell className="text-center">{formatPercent(uw.avgReturns.D2)}</TableCell>
