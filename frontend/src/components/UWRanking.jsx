@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { ArrowUpDown, ChevronUp, ChevronDown, TrendingUp, Award, Trophy, Medal, Target } from 'lucide-react';
+import { ArrowUpDown, ChevronUp, ChevronDown, TrendingUp, Award, Trophy, Medal, Target, ArrowLeft } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Card, CardHeader, CardTitle, CardContent } from './ui/card';
 import { Badge } from './ui/badge';
 import { 
