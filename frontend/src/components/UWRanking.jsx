@@ -3,6 +3,7 @@ import { ArrowUpDown, ChevronUp, ChevronDown, TrendingUp, Award, Trophy, Medal, 
 import { Link } from 'react-router-dom';
 import { Card, CardHeader, CardTitle, CardContent } from './ui/card';
 import { Badge } from './ui/badge';
+import { Button } from './ui/button';
 import { 
   Table,
   TableBody,
