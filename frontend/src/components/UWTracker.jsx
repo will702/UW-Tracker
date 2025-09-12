@@ -128,6 +128,10 @@ const UWTracker = () => {
           aValue = a.ipoPrice || 0;
           bValue = b.ipoPrice || 0;
           break;
+        case 'avgReturn7Days':
+          aValue = a.avgReturn7Days || 0;
+          bValue = b.avgReturn7Days || 0;
+          break;
         case 'returnD1':
         case 'returnD2':  
         case 'returnD3':
