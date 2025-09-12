@@ -171,7 +171,7 @@ const UWTracker = () => {
     });
 
     return sortableData;
-  }, [uwData, sortConfig]);
+  }, [dataWithAvgReturn, sortConfig]);
 
   // Pagination functionality
   const totalPages = Math.ceil(uwData.length / itemsPerPage);
