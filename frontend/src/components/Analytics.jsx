@@ -17,7 +17,7 @@ import {
   Line
 } from 'recharts';
 import { useToast } from '../hooks/use-toast';
-import api from '../services/api';
+import { uwAPI } from '../services/api';
 
 const Analytics = () => {
   const { toast } = useToast();
