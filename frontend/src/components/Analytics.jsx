@@ -105,13 +105,24 @@ const Analytics = () => {
       if (result.status === 'success') {
         setStockPerformanceData(result);
       } else {
-        throw new Error(result.error || 'Failed to fetch stock performance data');
+        // Better error handling for specific Alpha Vantage issues
+        let errorMessage = result.error || 'Failed to fetch stock performance data';
+        
+        if (errorMessage.includes('rate limit') || errorMessage.includes('Rate Limit')) {
+          errorMessage = `⏱️ Alpha Vantage API rate limit reached (25 requests/day for free tier). Please try again tomorrow or contact support for premium access.`;
+        } else if (errorMessage.includes('No data available')) {
+          errorMessage = `📊 No data available for ${stockCode}. Try using ${stockCode}.JK format for Indonesian stocks.`;
+        } else if (errorMessage.includes('Error Message')) {
+          errorMessage = `❌ Stock symbol not found: ${stockCode}. Please verify the symbol or try adding .JK suffix for Indonesian stocks.`;
+        }
+        
+        throw new Error(errorMessage);
       }
     } catch (error) {
       console.error('Error fetching stock performance:', error);
       toast({
-        title: "Error",
-        description: `Failed to fetch performance data for ${stockCode}: ${error.message}`,
+        title: "Stock Data Error",
+        description: error.message,
         variant: "destructive"
       });
       setStockPerformanceData(null);
