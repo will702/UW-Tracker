@@ -735,16 +735,11 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Alpha Vantage API Rate Limit Resolution"
-    - "Stock Performance Data Retrieval Fix"
-  stuck_tasks:
-    - "GET /api/stocks/performance/{symbol} - Performance Chart Data"
-    - "Indonesian Stock Symbol Support"
-    - "GET /api/stocks/daily/{symbol} - Daily Time Series"
-    - "GET /api/stocks/intraday/{symbol} - Intraday Data"
-    - "GET /api/stocks/test/{symbol} - Test Connectivity"
+    - "Improved Alpha Vantage Integration with Symbol Formatting"
+    - "Enhanced Error Handling and User Experience"
+  stuck_tasks: []
   test_all: false
-  test_priority: "stuck_first"
+  test_priority: "high_first"
 
 agent_communication:
   - agent: "main"
