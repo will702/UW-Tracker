@@ -95,8 +95,9 @@ const Analytics = () => {
         uwStats[uw].totalDeals++;
         
         // Process daily returns
-        ['d1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7'].forEach((day, index) => {
-          const returnValue = record.returns?.[`d${index + 1}`] || record[`d${index + 1}`];
+        ['returnD1', 'returnD2', 'returnD3', 'returnD4', 'returnD5', 'returnD6', 'returnD7'].forEach((field, index) => {
+          const day = `d${index + 1}`;
+          const returnValue = record[field];
           if (returnValue !== null && returnValue !== undefined && !isNaN(returnValue)) {
             uwStats[uw].totalReturns[day] += parseFloat(returnValue);
             uwStats[uw].validReturns[day]++;
