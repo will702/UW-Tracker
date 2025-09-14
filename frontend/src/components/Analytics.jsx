@@ -68,9 +68,6 @@ const Analytics = () => {
     // Process data for underwriter analytics
     const uwStats = {};
     
-    console.log('Analytics Debug - Processing records:', records.length);
-    console.log('Analytics Debug - Sample record:', records[0]);
-    
     records.forEach(record => {
       // Handle both grouped and non-grouped underwriter data
       const underwriters = Array.isArray(record.underwriters) 
@@ -105,8 +102,6 @@ const Analytics = () => {
         });
       });
     });
-
-    console.log('Analytics Debug - UW Stats sample:', Object.entries(uwStats).slice(0, 3));
 
     // Calculate averages and prepare chart data
     const successRateData = [];
@@ -184,9 +179,6 @@ const Analytics = () => {
     heatmapData.sort((a, b) => b.d7 - a.d7); // Sort by D+7 performance
 
     const marketAverage = uwCount > 0 ? totalMarketReturn / uwCount : 0;
-    
-    console.log('Analytics Debug - Success Rate Data:', successRateData.slice(0, 5));
-    console.log('Analytics Debug - Market Share Data:', marketShareData.slice(0, 5));
 
     setUwAnalytics({
       successRateData: successRateData.slice(0, 20), // Top 20 for readability
