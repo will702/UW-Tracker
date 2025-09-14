@@ -63,6 +63,9 @@ async def get_status_checks():
 # Include UW router
 api_router.include_router(uw_router)
 
+# Include stock router  
+app.include_router(stock_router)
+
 # Include the main API router
 app.include_router(api_router)
 
