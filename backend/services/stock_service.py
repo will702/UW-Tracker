@@ -82,62 +82,46 @@ class StockDataService:
     async def get_intraday_data(self, symbol: str, interval: str = '5min') -> Dict:
         """
         Get intraday time series data
-        interval: '1min', '5min', '15min', '30min', '60min'
+        Tries Alpha Vantage first, falls back to Yahoo Finance if it fails
         """
-        if not self.api_key or not self.ts:
-            return {
-                'symbol': symbol,
-                'error': 'Alpha Vantage API key not configured',
-                'status': 'error'
-            }
-            
-        # Format symbol for Indonesian stocks
-        formatted_symbol = self.format_stock_symbol(symbol)
-        
-        try:
-            loop = asyncio.get_event_loop()
-            data, meta_data = await loop.run_in_executor(
-                None, self.ts.get_intraday, formatted_symbol, interval, 'compact'
-            )
-            
-            # Check for rate limit or error responses
-            if isinstance(data, dict) and 'Error Message' in data:
+        # Try Alpha Vantage first if API key is available
+        if self.api_key and self.ts:
+            try:
+                formatted_symbol = self.format_stock_symbol(symbol)
+                
+                loop = asyncio.get_event_loop()
+                data, meta_data = await loop.run_in_executor(
+                    None, self.ts.get_intraday, formatted_symbol, interval, 'compact'
+                )
+                
+                # Check for rate limit or error responses
+                if isinstance(data, dict) and ('Error Message' in data or 'Note' in data):
+                    print(f"Alpha Vantage intraday failed for {symbol}, falling back to Yahoo Finance")
+                    # Convert Alpha Vantage interval to Yahoo Finance format
+                    yf_interval = interval.replace('min', 'm')  # 5min -> 5m, 15min -> 15m
+                    return await yahoo_finance_service.get_intraday_data(symbol, yf_interval)
+                elif not data or len(data) == 0:
+                    print(f"Alpha Vantage returned no intraday data for {symbol}, falling back to Yahoo Finance")
+                    yf_interval = interval.replace('min', 'm')
+                    return await yahoo_finance_service.get_intraday_data(symbol, yf_interval)
+                
                 return {
                     'symbol': formatted_symbol,
-                    'error': f"Alpha Vantage Error: {data['Error Message']}",
-                    'status': 'error'
+                    'original_symbol': symbol,
+                    'data': data,
+                    'meta_data': meta_data,
+                    'status': 'success',
+                    'source': 'alpha_vantage'
                 }
-            elif isinstance(data, dict) and 'Note' in data:
-                return {
-                    'symbol': formatted_symbol,
-                    'error': f"Alpha Vantage Rate Limit: {data['Note']}",
-                    'status': 'error'
-                }
-            elif not data or len(data) == 0:
-                return {
-                    'symbol': formatted_symbol,
-                    'error': f"No intraday data available for symbol {formatted_symbol}",
-                    'status': 'error'
-                }
-            
-            return {
-                'symbol': formatted_symbol,
-                'original_symbol': symbol,
-                'data': data,
-                'meta_data': meta_data,
-                'status': 'success'
-            }
-        except Exception as e:
-            error_message = str(e)
-            if 'limit' in error_message.lower():
-                error_message = f"Alpha Vantage API rate limit exceeded (25 requests/day for free tier). Please try again tomorrow or upgrade to premium plan."
-            
-            return {
-                'symbol': formatted_symbol,
-                'original_symbol': symbol,
-                'error': error_message,
-                'status': 'error'
-            }
+            except Exception as e:
+                print(f"Alpha Vantage intraday error for {symbol}: {str(e)}, falling back to Yahoo Finance")
+                yf_interval = interval.replace('min', 'm')
+                return await yahoo_finance_service.get_intraday_data(symbol, yf_interval)
+        else:
+            print(f"Alpha Vantage API key not available, using Yahoo Finance for intraday {symbol}")
+            # Convert interval and use Yahoo Finance
+            yf_interval = interval.replace('min', 'm')
+            return await yahoo_finance_service.get_intraday_data(symbol, yf_interval)
     
     async def get_multiple_stocks_data(self, symbols: List[str]) -> Dict[str, Dict]:
         """
