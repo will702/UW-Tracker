@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, BarChart3, TrendingUp, Target, Database, LineChart, Calendar } from 'lucide-react';
+import { ArrowLeft, BarChart3, TrendingUp, Target, Database, LineChart as LineChartIcon, Calendar } from 'lucide-react';
 import { 
   BarChart, 
   Bar, 
