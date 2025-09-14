@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, BarChart3, TrendingUp, Target, Database } from 'lucide-react';
+import { ArrowLeft, BarChart3, TrendingUp, Target, Database, LineChart, Calendar } from 'lucide-react';
 import { 
   BarChart, 
   Bar, 
@@ -12,9 +12,10 @@ import {
   PieChart,
   Pie,
   Cell,
-  Heatmap,
   LineChart,
-  Line
+  Line,
+  Area,
+  AreaChart
 } from 'recharts';
 import { useToast } from '../hooks/use-toast';
 import { uwAPI } from '../services/api';
@@ -23,6 +24,7 @@ const Analytics = () => {
   const { toast } = useToast();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard' or 'performance'
   const [uwAnalytics, setUwAnalytics] = useState({
     successRateData: [],
     marketShareData: [],
@@ -34,6 +36,13 @@ const Analytics = () => {
       marketAverage: 0
     }
   });
+
+  // Performance Charts State
+  const [selectedStock, setSelectedStock] = useState('');
+  const [timeRange, setTimeRange] = useState('30'); // days
+  const [stockPerformanceData, setStockPerformanceData] = useState(null);
+  const [performanceLoading, setPerformanceLoading] = useState(false);
+  const [availableStocks, setAvailableStocks] = useState([]);
 
   // Color palette for charts
   const COLORS = [
