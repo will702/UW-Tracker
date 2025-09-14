@@ -53,6 +53,13 @@ class StockDataService:
         Get intraday time series data
         interval: '1min', '5min', '15min', '30min', '60min'
         """
+        if not self.api_key or not self.ts:
+            return {
+                'symbol': symbol,
+                'error': 'Alpha Vantage API key not configured',
+                'status': 'error'
+            }
+            
         try:
             loop = asyncio.get_event_loop()
             data, meta_data = await loop.run_in_executor(
