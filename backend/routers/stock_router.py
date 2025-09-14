@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Query
 from typing import List, Optional
-from ..services.stock_service import stock_service
+from services.stock_service import stock_service
 
 router = APIRouter(prefix="/api/stocks", tags=["stocks"])
 
