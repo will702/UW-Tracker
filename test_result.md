@@ -189,15 +189,18 @@ backend:
 
   - task: "GET /api/stocks/daily/{symbol} - Daily Time Series"
     implemented: true
-    working: "NA"
+    working: false
     file: "/app/backend/routers/stock_router.py"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
     needs_retesting: false
     status_history:
       - working: "NA"
         agent: "testing"
         comment: "⚠️ Cannot test due to API rate limit. Endpoint properly implemented with outputsize parameter (compact/full) and proper error handling structure."
+      - working: false
+        agent: "testing"
+        comment: "❌ DAILY ENDPOINT BLOCKED: Returns 500 Internal Server Error due to Alpha Vantage rate limit. Tested both 'compact' and 'full' outputsize parameters - both fail with same underlying rate limit issue. Endpoint implementation is correct but blocked operationally."
 
   - task: "GET /api/stocks/intraday/{symbol} - Intraday Data"
     implemented: true
