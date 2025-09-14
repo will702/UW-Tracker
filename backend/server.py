@@ -6,13 +6,14 @@ import os
 import logging
 from pathlib import Path
 
+# Load environment variables FIRST
+ROOT_DIR = Path(__file__).parent
+load_dotenv(ROOT_DIR / '.env')
+
 # Import UW-related modules (using grouped version)
 from services.uw_service_grouped import UWServiceGrouped
 from routers.uw_router_grouped import router as uw_router, set_uw_service
 from routers.stock_router import router as stock_router
-
-ROOT_DIR = Path(__file__).parent
-load_dotenv(ROOT_DIR / '.env')
 
 # MongoDB connection
 mongo_url = os.environ['MONGO_URL']
