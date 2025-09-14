@@ -147,15 +147,18 @@ backend:
 
   - task: "GET /api/stocks/performance/{symbol} - Performance Chart Data"
     implemented: true
-    working: "NA"
+    working: false
     file: "/app/backend/routers/stock_router.py"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
     needs_retesting: false
     status_history:
       - working: "NA"
         agent: "testing"
         comment: "⚠️ Cannot test due to API rate limit reached (25 requests/day). However, endpoint structure is properly implemented with correct response format including chart_data, metrics, and performance calculations. Code review shows proper data processing and error handling."
+      - working: false
+        agent: "testing"
+        comment: "❌ CRITICAL RATE LIMIT ISSUE: Performance endpoint returns 500 Internal Server Error due to Alpha Vantage API rate limit (25 requests/day exceeded). Tested with both AAPL and GOTO.JK - both fail with same rate limit message. This is the root cause of user's 'no data returned' issue. Endpoint implementation is correct but operationally blocked by free tier limitations."
 
   - task: "Response Structure Verification"
     implemented: true
