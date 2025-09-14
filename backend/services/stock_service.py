@@ -110,22 +110,51 @@ class StockDataService:
                 'status': 'error'
             }
             
+        # Format symbol for Indonesian stocks
+        formatted_symbol = self.format_stock_symbol(symbol)
+        
         try:
             loop = asyncio.get_event_loop()
             data, meta_data = await loop.run_in_executor(
-                None, self.ts.get_intraday, symbol, interval, 'compact'
+                None, self.ts.get_intraday, formatted_symbol, interval, 'compact'
             )
             
+            # Check for rate limit or error responses
+            if isinstance(data, dict) and 'Error Message' in data:
+                return {
+                    'symbol': formatted_symbol,
+                    'error': f"Alpha Vantage Error: {data['Error Message']}",
+                    'status': 'error'
+                }
+            elif isinstance(data, dict) and 'Note' in data:
+                return {
+                    'symbol': formatted_symbol,
+                    'error': f"Alpha Vantage Rate Limit: {data['Note']}",
+                    'status': 'error'
+                }
+            elif not data or len(data) == 0:
+                return {
+                    'symbol': formatted_symbol,
+                    'error': f"No intraday data available for symbol {formatted_symbol}",
+                    'status': 'error'
+                }
+            
             return {
-                'symbol': symbol,
+                'symbol': formatted_symbol,
+                'original_symbol': symbol,
                 'data': data,
                 'meta_data': meta_data,
                 'status': 'success'
             }
         except Exception as e:
+            error_message = str(e)
+            if 'limit' in error_message.lower():
+                error_message = f"Alpha Vantage API rate limit exceeded (25 requests/day for free tier). Please try again tomorrow or upgrade to premium plan."
+            
             return {
-                'symbol': symbol,
-                'error': str(e),
+                'symbol': formatted_symbol,
+                'original_symbol': symbol,
+                'error': error_message,
                 'status': 'error'
             }
     
