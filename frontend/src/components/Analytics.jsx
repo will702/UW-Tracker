@@ -61,6 +61,7 @@ const Analytics = () => {
       const records = response.data || [];
       setData(records);
       processAnalyticsData(records);
+      extractAvailableStocks(records);
     } catch (error) {
       console.error('Error fetching data:', error);
       toast({
@@ -70,6 +71,66 @@ const Analytics = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const extractAvailableStocks = (records) => {
+    // Extract stock codes from records for Performance Charts
+    const stocks = records
+      .filter(record => record.code && record.code.trim() !== '')
+      .map(record => ({
+        code: record.code,
+        companyName: record.companyName,
+        underwriters: record.underwriters || [record.uw]
+      }))
+      .sort((a, b) => a.code.localeCompare(b.code));
+    
+    setAvailableStocks(stocks);
+  };
+
+  const fetchStockPerformance = async (stockCode, days) => {
+    if (!stockCode) return;
+    
+    try {
+      setPerformanceLoading(true);
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
+      const response = await fetch(`${backendUrl}/api/stocks/performance/${stockCode}?days_back=${days}`);
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch stock data: ${response.status}`);
+      }
+      
+      const result = await response.json();
+      
+      if (result.status === 'success') {
+        setStockPerformanceData(result);
+      } else {
+        throw new Error(result.error || 'Failed to fetch stock performance data');
+      }
+    } catch (error) {
+      console.error('Error fetching stock performance:', error);
+      toast({
+        title: "Error",
+        description: `Failed to fetch performance data for ${stockCode}: ${error.message}`,
+        variant: "destructive"
+      });
+      setStockPerformanceData(null);
+    } finally {
+      setPerformanceLoading(false);
+    }
+  };
+
+  const handleStockSelection = (stockCode) => {
+    setSelectedStock(stockCode);
+    if (stockCode) {
+      fetchStockPerformance(stockCode, timeRange);
+    }
+  };
+
+  const handleTimeRangeChange = (days) => {
+    setTimeRange(days);
+    if (selectedStock) {
+      fetchStockPerformance(selectedStock, days);
     }
   };
 
