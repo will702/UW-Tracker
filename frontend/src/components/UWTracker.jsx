@@ -437,6 +437,12 @@ const UWTracker = () => {
                 <span>Ranking Performance UW</span>
               </Button>
             </Link>
+            <Link to="/analytics">
+              <Button variant="outline" className="flex items-center space-x-2">
+                <BarChart3 className="h-4 w-4" />
+                <span>Analytics Dashboard</span>
+              </Button>
+            </Link>
           </div>
 
           {/* Search Bar */}
