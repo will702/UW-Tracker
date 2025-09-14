@@ -48,7 +48,7 @@ const Analytics = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const response = await api.getUWData({ limit: 1000 });
+      const response = await uwAPI.getAllRecords('', 1000, 0);
       const records = response.data || [];
       setData(records);
       processAnalyticsData(records);
