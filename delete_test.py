@@ -10,7 +10,7 @@ import uuid
 from datetime import datetime
 
 # Backend URL from environment
-BACKEND_URL = "https://bold-satoshi.preview.emergentagent.com/api"
+BACKEND_URL = "https://ipo-performance.preview.emergentagent.com/api"
 
 class DeleteTester:
     def __init__(self):

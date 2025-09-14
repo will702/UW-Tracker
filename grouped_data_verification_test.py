@@ -13,7 +13,7 @@ import sys
 import os
 
 # Backend URL from environment
-BACKEND_URL = "https://underwriter-hub-1.preview.emergentagent.com/api"
+BACKEND_URL = "https://ipo-performance.preview.emergentagent.com/api"
 
 class GroupedDataVerificationTester:
     def __init__(self):

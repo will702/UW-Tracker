@@ -9,7 +9,7 @@ import json
 import uuid
 
 # Backend URL from environment
-BACKEND_URL = "https://bold-satoshi.preview.emergentagent.com/api"
+BACKEND_URL = "https://ipo-performance.preview.emergentagent.com/api"
 
 class ComprehensiveDeleteTester:
     def __init__(self):

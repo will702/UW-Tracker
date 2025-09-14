@@ -8,7 +8,7 @@ import requests
 import json
 
 # Backend URL
-BACKEND_URL = "https://bold-satoshi.preview.emergentagent.com/api"
+BACKEND_URL = "https://ipo-performance.preview.emergentagent.com/api"
 
 def test_search_functionality():
     """Test the UW-only search functionality"""

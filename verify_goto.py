@@ -6,7 +6,7 @@ Verify GOTO record has the expected underwriters
 import requests
 
 # Backend URL
-BACKEND_URL = "https://bold-satoshi.preview.emergentagent.com/api"
+BACKEND_URL = "https://ipo-performance.preview.emergentagent.com/api"
 
 def verify_goto_record():
     """Verify GOTO record structure"""
