@@ -213,29 +213,44 @@ class StockDataService:
     async def get_stock_performance_chart(self, symbol: str, days_back: int = 30) -> Dict:
         """
         Get complete stock performance data ready for charting
+        Uses Alpha Vantage first, falls back to Yahoo Finance if needed
         """
-        # Get stock data
-        stock_data = await self.get_daily_data(symbol)
-        
-        if stock_data.get('status') != 'success':
-            return stock_data
-        
-        # Process for charts
-        chart_result = self.process_stock_data_for_charts(stock_data, days_back)
-        
-        if 'error' in chart_result:
-            return chart_result
-        
-        # Calculate metrics
-        metrics = self.calculate_performance_metrics(chart_result['chart_data'])
-        
-        return {
-            'symbol': symbol,
-            'chart_data': chart_result['chart_data'],
-            'metrics': metrics,
-            'status': 'success',
-            'days_back': days_back
-        }
+        # Try Alpha Vantage first if available
+        if self.api_key and self.ts:
+            try:
+                # Get stock data from Alpha Vantage
+                stock_data = await self.get_daily_data(symbol)
+                
+                # If Alpha Vantage succeeded, process the data
+                if stock_data.get('status') == 'success':
+                    # Process for charts using existing logic
+                    chart_result = self.process_stock_data_for_charts(stock_data, days_back)
+                    
+                    if 'error' not in chart_result:
+                        # Calculate metrics
+                        metrics = self.calculate_performance_metrics(chart_result['chart_data'])
+                        
+                        return {
+                            'symbol': stock_data['symbol'],
+                            'original_symbol': stock_data.get('original_symbol', symbol),
+                            'chart_data': chart_result['chart_data'],
+                            'metrics': metrics,
+                            'status': 'success',
+                            'days_back': days_back,
+                            'source': 'alpha_vantage'
+                        }
+                
+                # Alpha Vantage failed, use Yahoo Finance fallback
+                print(f"Alpha Vantage failed for performance chart {symbol}, using Yahoo Finance fallback")
+                return await yahoo_finance_service.get_stock_performance_chart(symbol, days_back)
+            
+            except Exception as e:
+                print(f"Alpha Vantage performance chart error for {symbol}: {str(e)}, using Yahoo Finance fallback")
+                return await yahoo_finance_service.get_stock_performance_chart(symbol, days_back)
+        else:
+            # No Alpha Vantage API key, use Yahoo Finance directly
+            print(f"Alpha Vantage API key not available, using Yahoo Finance for performance chart {symbol}")
+            return await yahoo_finance_service.get_stock_performance_chart(symbol, days_back)
 
 # Create global instance
 stock_service = StockDataService()
