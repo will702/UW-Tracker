@@ -174,15 +174,18 @@ backend:
 
   - task: "Indonesian Stock Symbol Support"
     implemented: true
-    working: "NA"
+    working: false
     file: "/app/backend/routers/stock_router.py"
-    stuck_count: 0
+    stuck_count: 1
     priority: "medium"
     needs_retesting: false
     status_history:
       - working: "NA"
         agent: "testing"
         comment: "⚠️ Cannot test Indonesian symbols (GOTO, BBCA, TLKM) due to API rate limit. However, the implementation is symbol-agnostic and should work with any valid stock symbol supported by Alpha Vantage."
+      - working: false
+        agent: "testing"
+        comment: "❌ RATE LIMIT BLOCKING INDONESIAN STOCKS: Tested GOTO, GOTO.JK, and BBCA.JK - all return rate limit error. Implementation supports Indonesian symbols correctly (both with and without .JK suffix), but API calls are blocked by daily limit. This affects user's ability to test Indonesian stock performance data."
 
   - task: "GET /api/stocks/daily/{symbol} - Daily Time Series"
     implemented: true
