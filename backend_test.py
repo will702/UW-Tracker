@@ -864,7 +864,22 @@ class UWTrackerAPITester:
             print("❌ API health check failed. Stopping tests.")
             return False
         
-        # Core functionality tests
+        # Stock API Tests (New Alpha Vantage Integration)
+        print("\n📈 ALPHA VANTAGE STOCK API TESTS")
+        print("-" * 40)
+        if self.test_stock_api_connectivity():
+            self.test_stock_performance_endpoint()
+            self.test_indonesian_stock_symbol()
+            self.test_stock_daily_endpoint()
+            self.test_stock_intraday_endpoint()
+            self.test_stock_error_handling()
+            self.test_stock_rate_limiting_awareness()
+        else:
+            print("⚠️  Stock API connectivity failed. Skipping other stock tests.")
+        
+        # Core UW functionality tests
+        print("\n📊 UW TRACKER API TESTS")
+        print("-" * 40)
         self.test_get_all_records()
         self.test_search_functionality_uw_only()  # New UW-only search test
         self.test_search_bug_investigation()  # Test the reported search bug
@@ -873,6 +888,8 @@ class UWTrackerAPITester:
         self.test_get_stats()
         
         # CRUD operations
+        print("\n🔧 CRUD OPERATIONS TESTS")
+        print("-" * 40)
         self.test_create_record()
         self.test_create_duplicate_record()
         self.test_invalid_data_validation()
