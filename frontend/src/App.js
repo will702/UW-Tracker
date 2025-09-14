@@ -16,6 +16,7 @@ function App() {
           <Route path="/" element={<UWTracker />} />
           <Route path="/admin" element={<AdminPanel />} />
           <Route path="/ranking" element={<UWRanking />} />
+          <Route path="/analytics" element={<Analytics />} />
         </Routes>
         
         {/* Floating Admin Button */}
