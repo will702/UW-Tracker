@@ -1263,8 +1263,18 @@ class UWTrackerAPITester:
             print("❌ API health check failed. Stopping tests.")
             return False
         
-        # Stock API Tests (New Alpha Vantage Integration)
-        print("\n📈 ALPHA VANTAGE STOCK API TESTS")
+        # Yahoo Finance Fallback System Tests (New Implementation)
+        print("\n🔄 YAHOO FINANCE FALLBACK SYSTEM TESTS")
+        print("-" * 50)
+        self.test_yahoo_finance_fallback_basic_connectivity()
+        self.test_yahoo_finance_fallback_performance_charts()
+        self.test_yahoo_finance_data_structure_verification()
+        self.test_yahoo_finance_different_time_ranges()
+        self.test_yahoo_finance_indonesian_stock_formatting()
+        self.test_yahoo_finance_fallback_comprehensive_verification()
+        
+        # Legacy Stock API Tests (Alpha Vantage Integration)
+        print("\n📈 LEGACY ALPHA VANTAGE STOCK API TESTS")
         print("-" * 40)
         if self.test_stock_api_connectivity():
             self.test_stock_performance_endpoint()
