@@ -9,8 +9,11 @@ class StockDataService:
     def __init__(self):
         self.api_key = os.environ.get('ALPHA_VANTAGE_API_KEY')
         if not self.api_key:
-            raise ValueError("ALPHA_VANTAGE_API_KEY environment variable is required")
-        self.ts = TimeSeries(key=self.api_key, output_format='json')
+            print("Warning: ALPHA_VANTAGE_API_KEY environment variable not found")
+            self.api_key = None
+            self.ts = None
+        else:
+            self.ts = TimeSeries(key=self.api_key, output_format='json')
         self.base_url = "https://www.alphavantage.co/query"
         
     async def get_daily_data(self, symbol: str, outputsize: str = 'compact') -> Dict:
@@ -18,6 +21,13 @@ class StockDataService:
         Get daily time series data for a stock symbol
         outputsize: 'compact' returns 100 data points, 'full' returns 20+ years
         """
+        if not self.api_key or not self.ts:
+            return {
+                'symbol': symbol,
+                'error': 'Alpha Vantage API key not configured',
+                'status': 'error'
+            }
+            
         try:
             # Use asyncio to handle the synchronous alpha_vantage library
             loop = asyncio.get_event_loop()
