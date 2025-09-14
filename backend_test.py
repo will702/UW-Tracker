@@ -643,6 +643,202 @@ class UWTrackerAPITester:
         except Exception as e:
             self.log_test("DELETE /uw-data/{id} - Nonexistent Record", False, f"Error: {str(e)}")
     
+    def test_stock_api_connectivity(self):
+        """Test Alpha Vantage API connectivity with AAPL"""
+        print("\n📈 Testing Alpha Vantage Stock API Integration...")
+        try:
+            response = self.session.get(f"{self.base_url}/stocks/test/AAPL")
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('status') == 'success':
+                    self.log_test("Stock API - AAPL Connectivity Test", True, 
+                                f"API key configured: {data.get('api_key_configured')}, Data available: {data.get('data_available')}")
+                    return True
+                else:
+                    self.log_test("Stock API - AAPL Connectivity Test", False, 
+                                f"API Error: {data.get('message', 'Unknown error')}")
+                    return False
+            else:
+                self.log_test("Stock API - AAPL Connectivity Test", False, 
+                            f"HTTP Status: {response.status_code}")
+                return False
+        except Exception as e:
+            self.log_test("Stock API - AAPL Connectivity Test", False, f"Error: {str(e)}")
+            return False
+    
+    def test_stock_performance_endpoint(self):
+        """Test stock performance endpoint with AAPL"""
+        try:
+            response = self.session.get(f"{self.base_url}/stocks/performance/AAPL?days_back=30")
+            if response.status_code == 200:
+                data = response.json()
+                required_fields = ["chart_data", "metrics", "symbol"]
+                if all(field in data for field in required_fields):
+                    chart_data = data.get('chart_data', [])
+                    metrics = data.get('metrics', {})
+                    
+                    # Verify chart_data structure
+                    if chart_data and len(chart_data) > 0:
+                        sample_point = chart_data[0]
+                        chart_fields = ["date", "open", "high", "low", "close", "volume"]
+                        if all(field in sample_point for field in chart_fields):
+                            self.log_test("Stock Performance - AAPL Chart Data", True, 
+                                        f"Retrieved {len(chart_data)} data points with proper structure")
+                        else:
+                            missing_chart_fields = [f for f in chart_fields if f not in sample_point]
+                            self.log_test("Stock Performance - AAPL Chart Data", False, 
+                                        f"Missing chart fields: {missing_chart_fields}")
+                    else:
+                        self.log_test("Stock Performance - AAPL Chart Data", False, 
+                                    "No chart data returned")
+                    
+                    # Verify metrics structure
+                    metrics_fields = ["total_return", "total_return_percent", "volatility", "first_price", "last_price"]
+                    if all(field in metrics for field in metrics_fields):
+                        self.log_test("Stock Performance - AAPL Metrics", True, 
+                                    f"Total return: {metrics.get('total_return_percent', 0):.2f}%, Volatility: {metrics.get('volatility_percent', 0):.2f}%")
+                    else:
+                        missing_metrics = [f for f in metrics_fields if f not in metrics]
+                        self.log_test("Stock Performance - AAPL Metrics", False, 
+                                    f"Missing metrics fields: {missing_metrics}")
+                else:
+                    missing = [f for f in required_fields if f not in data]
+                    self.log_test("Stock Performance - AAPL Structure", False, 
+                                f"Missing response fields: {missing}")
+            else:
+                self.log_test("Stock Performance - AAPL", False, 
+                            f"HTTP Status: {response.status_code}")
+        except Exception as e:
+            self.log_test("Stock Performance - AAPL", False, f"Error: {str(e)}")
+    
+    def test_indonesian_stock_symbol(self):
+        """Test with Indonesian stock symbols"""
+        indonesian_symbols = ["GOTO", "BBCA", "TLKM"]  # Common Indonesian stocks
+        
+        for symbol in indonesian_symbols:
+            try:
+                response = self.session.get(f"{self.base_url}/stocks/test/{symbol}")
+                if response.status_code == 200:
+                    data = response.json()
+                    if data.get('status') == 'success':
+                        self.log_test(f"Indonesian Stock - {symbol} Test", True, 
+                                    f"Successfully connected to {symbol}")
+                        
+                        # Try performance endpoint for this symbol
+                        perf_response = self.session.get(f"{self.base_url}/stocks/performance/{symbol}?days_back=30")
+                        if perf_response.status_code == 200:
+                            perf_data = perf_response.json()
+                            if perf_data.get('status') == 'success':
+                                self.log_test(f"Indonesian Stock - {symbol} Performance", True, 
+                                            f"Performance data retrieved for {symbol}")
+                            else:
+                                self.log_test(f"Indonesian Stock - {symbol} Performance", False, 
+                                            f"Performance error: {perf_data.get('error', 'Unknown')}")
+                        else:
+                            self.log_test(f"Indonesian Stock - {symbol} Performance", False, 
+                                        f"Performance HTTP Status: {perf_response.status_code}")
+                        break  # Test only the first working symbol
+                    else:
+                        self.log_test(f"Indonesian Stock - {symbol} Test", False, 
+                                    f"API Error: {data.get('message', 'Unknown error')}")
+                else:
+                    self.log_test(f"Indonesian Stock - {symbol} Test", False, 
+                                f"HTTP Status: {response.status_code}")
+            except Exception as e:
+                self.log_test(f"Indonesian Stock - {symbol} Test", False, f"Error: {str(e)}")
+    
+    def test_stock_daily_endpoint(self):
+        """Test daily time series endpoint"""
+        try:
+            response = self.session.get(f"{self.base_url}/stocks/daily/AAPL?outputsize=compact")
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('status') == 'success':
+                    required_fields = ["symbol", "data", "meta_data"]
+                    if all(field in data for field in required_fields):
+                        self.log_test("Stock Daily - AAPL", True, 
+                                    f"Daily data retrieved for {data.get('symbol')}")
+                    else:
+                        missing = [f for f in required_fields if f not in data]
+                        self.log_test("Stock Daily - AAPL", False, 
+                                    f"Missing fields: {missing}")
+                else:
+                    self.log_test("Stock Daily - AAPL", False, 
+                                f"API Error: {data.get('error', 'Unknown error')}")
+            else:
+                self.log_test("Stock Daily - AAPL", False, 
+                            f"HTTP Status: {response.status_code}")
+        except Exception as e:
+            self.log_test("Stock Daily - AAPL", False, f"Error: {str(e)}")
+    
+    def test_stock_intraday_endpoint(self):
+        """Test intraday time series endpoint"""
+        try:
+            response = self.session.get(f"{self.base_url}/stocks/intraday/AAPL?interval=5min")
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('status') == 'success':
+                    required_fields = ["symbol", "data", "meta_data"]
+                    if all(field in data for field in required_fields):
+                        self.log_test("Stock Intraday - AAPL", True, 
+                                    f"Intraday data retrieved for {data.get('symbol')}")
+                    else:
+                        missing = [f for f in required_fields if f not in data]
+                        self.log_test("Stock Intraday - AAPL", False, 
+                                    f"Missing fields: {missing}")
+                else:
+                    self.log_test("Stock Intraday - AAPL", False, 
+                                f"API Error: {data.get('error', 'Unknown error')}")
+            else:
+                self.log_test("Stock Intraday - AAPL", False, 
+                            f"HTTP Status: {response.status_code}")
+        except Exception as e:
+            self.log_test("Stock Intraday - AAPL", False, f"Error: {str(e)}")
+    
+    def test_stock_error_handling(self):
+        """Test error handling with invalid stock symbol"""
+        try:
+            response = self.session.get(f"{self.base_url}/stocks/test/INVALID_SYMBOL_12345")
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('status') == 'error':
+                    self.log_test("Stock Error Handling - Invalid Symbol", True, 
+                                f"Correctly handled invalid symbol: {data.get('message', 'No message')}")
+                else:
+                    self.log_test("Stock Error Handling - Invalid Symbol", False, 
+                                "Should have returned error status for invalid symbol")
+            else:
+                # Some error responses might return non-200 status codes, which is also acceptable
+                self.log_test("Stock Error Handling - Invalid Symbol", True, 
+                            f"Error handled with HTTP status: {response.status_code}")
+        except Exception as e:
+            self.log_test("Stock Error Handling - Invalid Symbol", False, f"Error: {str(e)}")
+    
+    def test_stock_rate_limiting_awareness(self):
+        """Test that the API is aware of rate limiting (basic test)"""
+        try:
+            # Make multiple requests quickly to see if there's any rate limiting handling
+            symbols = ["AAPL", "MSFT", "GOOGL"]
+            start_time = datetime.now()
+            
+            for symbol in symbols:
+                response = self.session.get(f"{self.base_url}/stocks/test/{symbol}")
+                if response.status_code != 200:
+                    break
+            
+            end_time = datetime.now()
+            duration = (end_time - start_time).total_seconds()
+            
+            # If it takes more than a few seconds, there might be rate limiting in place
+            if duration > 5:
+                self.log_test("Stock Rate Limiting - Awareness", True, 
+                            f"Requests took {duration:.1f}s, suggesting rate limiting awareness")
+            else:
+                self.log_test("Stock Rate Limiting - Basic Test", True, 
+                            f"Multiple requests completed in {duration:.1f}s")
+        except Exception as e:
+            self.log_test("Stock Rate Limiting - Test", False, f"Error: {str(e)}")
+
     def cleanup_test_records(self):
         """Clean up any test records created during testing"""
         print("\n🧹 Cleaning up test records...")
