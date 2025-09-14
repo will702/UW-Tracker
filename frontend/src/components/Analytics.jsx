@@ -566,6 +566,9 @@ const Analytics = () => {
                       </option>
                     ))}
                   </select>
+                  <p className="text-xs text-gray-500 mt-1">
+                    💡 Indonesian stocks will automatically have .JK suffix added (e.g., GOTO → GOTO.JK)
+                  </p>
                 </div>
                 
                 <div>
