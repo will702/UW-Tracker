@@ -351,182 +351,368 @@ const Analytics = () => {
         {/* Tab Content */}
         {activeTab === 'dashboard' ? (
           <div>
-            {/* Dashboard Analytics Content */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-lg p-6 shadow-sm border">
-            <div className="flex items-center">
-              <Database className="h-8 w-8 text-blue-500" />
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total UW</p>
-                <p className="text-2xl font-semibold text-gray-900">{uwAnalytics.summaryStats.totalUW}</p>
+            {/* Summary Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+              <div className="bg-white rounded-lg p-6 shadow-sm border">
+                <div className="flex items-center">
+                  <Database className="h-8 w-8 text-blue-500" />
+                  <div className="ml-4">
+                    <p className="text-sm font-medium text-gray-600">Total UW</p>
+                    <p className="text-2xl font-semibold text-gray-900">{uwAnalytics.summaryStats.totalUW}</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-white rounded-lg p-6 shadow-sm border">
+                <div className="flex items-center">
+                  <TrendingUp className="h-8 w-8 text-green-500" />
+                  <div className="ml-4">
+                    <p className="text-sm font-medium text-gray-600">Best Performer</p>
+                    <p className="text-lg font-semibold text-gray-900">{uwAnalytics.summaryStats.bestPerformer.uw}</p>
+                    <p className="text-sm text-green-600">{formatPercent(uwAnalytics.summaryStats.bestPerformer.avgReturn)}</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-white rounded-lg p-6 shadow-sm border">
+                <div className="flex items-center">
+                  <Target className="h-8 w-8 text-orange-500" />
+                  <div className="ml-4">
+                    <p className="text-sm font-medium text-gray-600">Market Average</p>
+                    <p className="text-2xl font-semibold text-gray-900">{formatPercent(uwAnalytics.summaryStats.marketAverage)}</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-white rounded-lg p-6 shadow-sm border">
+                <div className="flex items-center">
+                  <Database className="h-8 w-8 text-purple-500" />
+                  <div className="ml-4">
+                    <p className="text-sm font-medium text-gray-600">Total Records</p>
+                    <p className="text-2xl font-semibold text-gray-900">{data.length}</p>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-          
-          <div className="bg-white rounded-lg p-6 shadow-sm border">
-            <div className="flex items-center">
-              <TrendingUp className="h-8 w-8 text-green-500" />
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Best Performer</p>
-                <p className="text-lg font-semibold text-gray-900">{uwAnalytics.summaryStats.bestPerformer.uw}</p>
-                <p className="text-sm text-green-600">{formatPercent(uwAnalytics.summaryStats.bestPerformer.avgReturn)}</p>
+
+            {/* Charts Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              
+              {/* Success Rate Bar Chart */}
+              <div className="bg-white rounded-lg p-6 shadow-sm border">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Top 20 UW Success Rates</h3>
+                <div className="h-96">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={uwAnalytics.successRateData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis 
+                        dataKey="uw" 
+                        angle={-45}
+                        textAnchor="end"
+                        height={100}
+                        fontSize={12}
+                      />
+                      <YAxis tickFormatter={(value) => `${(value * 100).toFixed(0)}%`} />
+                      <Tooltip 
+                        formatter={(value, name) => [formatPercent(value), 'Avg Return']}
+                        labelFormatter={(uw) => `UW: ${uw}`}
+                        contentStyle={{ backgroundColor: '#f8f9fa', border: '1px solid #dee2e6' }}
+                      />
+                      <Bar 
+                        dataKey="avgReturn" 
+                        fill="#3b82f6"
+                        name="Average Return"
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
               </div>
-            </div>
-          </div>
-          
-          <div className="bg-white rounded-lg p-6 shadow-sm border">
-            <div className="flex items-center">
-              <Target className="h-8 w-8 text-orange-500" />
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Market Average</p>
-                <p className="text-2xl font-semibold text-gray-900">{formatPercent(uwAnalytics.summaryStats.marketAverage)}</p>
+
+              {/* Market Share Pie Chart */}
+              <div className="bg-white rounded-lg p-6 shadow-sm border">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Top 10 UW Market Share (by Deals)</h3>
+                <div className="h-96">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={uwAnalytics.marketShareData}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ name, percentage }) => `${name} (${percentage}%)`}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {uwAnalytics.marketShareData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip 
+                        formatter={(value) => [`${value} deals`, 'Total Deals']}
+                        contentStyle={{ backgroundColor: '#f8f9fa', border: '1px solid #dee2e6' }}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
               </div>
-            </div>
-          </div>
-          
-          <div className="bg-white rounded-lg p-6 shadow-sm border">
-            <div className="flex items-center">
-              <Database className="h-8 w-8 text-purple-500" />
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Records</p>
-                <p className="text-2xl font-semibold text-gray-900">{data.length}</p>
-              </div>
-            </div>
-          </div>
-        </div>
 
-        {/* Charts Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          
-          {/* Success Rate Bar Chart */}
-          <div className="bg-white rounded-lg p-6 shadow-sm border">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Top 20 UW Success Rates</h3>
-            <div className="h-96">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={uwAnalytics.successRateData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis 
-                    dataKey="uw" 
-                    angle={-45}
-                    textAnchor="end"
-                    height={100}
-                    fontSize={12}
-                  />
-                  <YAxis tickFormatter={(value) => `${(value * 100).toFixed(0)}%`} />
-                  <Tooltip 
-                    formatter={(value, name) => [formatPercent(value), 'Avg Return']}
-                    labelFormatter={(uw) => `UW: ${uw}`}
-                    contentStyle={{ backgroundColor: '#f8f9fa', border: '1px solid #dee2e6' }}
-                  />
-                  <Bar 
-                    dataKey="avgReturn" 
-                    fill="#3b82f6"
-                    name="Average Return"
-                  />
-                </BarChart>
-              </ResponsiveContainer>
             </div>
-          </div>
 
-          {/* Market Share Pie Chart */}
-          <div className="bg-white rounded-lg p-6 shadow-sm border">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Top 10 UW Market Share (by Deals)</h3>
-            <div className="h-96">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={uwAnalytics.marketShareData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ name, percentage }) => `${name} (${percentage}%)`}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    {uwAnalytics.marketShareData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip 
-                    formatter={(value) => [`${value} deals`, 'Total Deals']}
-                    contentStyle={{ backgroundColor: '#f8f9fa', border: '1px solid #dee2e6' }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-        </div>
-
-        {/* Performance Heatmap */}
-        <div className="mt-8">
-          <div className="bg-white rounded-lg p-6 shadow-sm border">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">UW Daily Performance Heatmap (Top 15)</h3>
-            <div className="overflow-x-auto">
-              <table className="min-w-full">
-                <thead>
-                  <tr className="border-b">
-                    <th className="text-left py-2 px-3 font-medium text-gray-900">UW</th>
-                    <th className="text-center py-2 px-3 font-medium text-gray-900">D+1</th>
-                    <th className="text-center py-2 px-3 font-medium text-gray-900">D+2</th>
-                    <th className="text-center py-2 px-3 font-medium text-gray-900">D+3</th>
-                    <th className="text-center py-2 px-3 font-medium text-gray-900">D+4</th>
-                    <th className="text-center py-2 px-3 font-medium text-gray-900">D+5</th>
-                    <th className="text-center py-2 px-3 font-medium text-gray-900">D+6</th>
-                    <th className="text-center py-2 px-3 font-medium text-gray-900">D+7</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {uwAnalytics.heatmapData.map((row, index) => (
-                    <tr key={index} className="border-b hover:bg-gray-50">
-                      <td className="py-2 px-3 font-medium text-gray-900">{row.uw}</td>
-                      {['d1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7'].map(day => (
-                        <td 
-                          key={day} 
-                          className="py-2 px-3 text-center text-sm font-medium"
-                          style={{ 
-                            backgroundColor: `${getPerformanceColor(row[day])}20`,
-                            color: getPerformanceColor(row[day])
-                          }}
-                        >
-                          {formatPercent(row[day])}
-                        </td>
+            {/* Performance Heatmap */}
+            <div className="mt-8">
+              <div className="bg-white rounded-lg p-6 shadow-sm border">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">UW Daily Performance Heatmap (Top 15)</h3>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full">
+                    <thead>
+                      <tr className="border-b">
+                        <th className="text-left py-2 px-3 font-medium text-gray-900">UW</th>
+                        <th className="text-center py-2 px-3 font-medium text-gray-900">D+1</th>
+                        <th className="text-center py-2 px-3 font-medium text-gray-900">D+2</th>
+                        <th className="text-center py-2 px-3 font-medium text-gray-900">D+3</th>
+                        <th className="text-center py-2 px-3 font-medium text-gray-900">D+4</th>
+                        <th className="text-center py-2 px-3 font-medium text-gray-900">D+5</th>
+                        <th className="text-center py-2 px-3 font-medium text-gray-900">D+6</th>
+                        <th className="text-center py-2 px-3 font-medium text-gray-900">D+7</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {uwAnalytics.heatmapData.map((row, index) => (
+                        <tr key={index} className="border-b hover:bg-gray-50">
+                          <td className="py-2 px-3 font-medium text-gray-900">{row.uw}</td>
+                          {['d1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7'].map(day => (
+                            <td 
+                              key={day} 
+                              className="py-2 px-3 text-center text-sm font-medium"
+                              style={{ 
+                                backgroundColor: `${getPerformanceColor(row[day])}20`,
+                                color: getPerformanceColor(row[day])
+                              }}
+                            >
+                              {formatPercent(row[day])}
+                            </td>
+                          ))}
+                        </tr>
                       ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
 
-        {/* Legend for Heatmap */}
-        <div className="mt-4 bg-white rounded-lg p-4 shadow-sm border">
-          <h4 className="text-sm font-medium text-gray-700 mb-2">Performance Color Guide:</h4>
-          <div className="flex flex-wrap gap-4 text-xs">
-            <div className="flex items-center">
-              <div className="w-4 h-4 rounded mr-2" style={{ backgroundColor: '#22c55e' }}></div>
-              <span>Excellent (&gt;10%)</span>
-            </div>
-            <div className="flex items-center">
-              <div className="w-4 h-4 rounded mr-2" style={{ backgroundColor: '#84cc16' }}></div>
-              <span>Good (5-10%)</span>
-            </div>
-            <div className="flex items-center">
-              <div className="w-4 h-4 rounded mr-2" style={{ backgroundColor: '#eab308' }}></div>
-              <span>Positive (0-5%)</span>
-            </div>
-            <div className="flex items-center">
-              <div className="w-4 h-4 rounded mr-2" style={{ backgroundColor: '#f97316' }}></div>
-              <span>Slightly Negative (0 to -5%)</span>
-            </div>
-            <div className="flex items-center">
-              <div className="w-4 h-4 rounded mr-2" style={{ backgroundColor: '#ef4444' }}></div>
-              <span>Poor (&lt;-5%)</span>
+            {/* Legend for Heatmap */}
+            <div className="mt-4 bg-white rounded-lg p-4 shadow-sm border">
+              <h4 className="text-sm font-medium text-gray-700 mb-2">Performance Color Guide:</h4>
+              <div className="flex flex-wrap gap-4 text-xs">
+                <div className="flex items-center">
+                  <div className="w-4 h-4 rounded mr-2" style={{ backgroundColor: '#22c55e' }}></div>
+                  <span>Excellent (&gt;10%)</span>
+                </div>
+                <div className="flex items-center">
+                  <div className="w-4 h-4 rounded mr-2" style={{ backgroundColor: '#84cc16' }}></div>
+                  <span>Good (5-10%)</span>
+                </div>
+                <div className="flex items-center">
+                  <div className="w-4 h-4 rounded mr-2" style={{ backgroundColor: '#eab308' }}></div>
+                  <span>Positive (0-5%)</span>
+                </div>
+                <div className="flex items-center">
+                  <div className="w-4 h-4 rounded mr-2" style={{ backgroundColor: '#f97316' }}></div>
+                  <span>Slightly Negative (0 to -5%)</span>
+                </div>
+                <div className="flex items-center">
+                  <div className="w-4 h-4 rounded mr-2" style={{ backgroundColor: '#ef4444' }}></div>
+                  <span>Poor (&lt;-5%)</span>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <div>
+            {/* Performance Charts Tab */}
+            <div className="bg-white rounded-lg p-6 shadow-sm border mb-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                <LineChartIcon className="h-6 w-6 mr-3 text-blue-500" />
+                Stock Performance Charts
+              </h2>
+              
+              {/* Stock Selection and Time Range Controls */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Select Stock Symbol
+                  </label>
+                  <select
+                    value={selectedStock}
+                    onChange={(e) => handleStockSelection(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <option value="">Choose a stock...</option>
+                    {availableStocks.map((stock) => (
+                      <option key={stock.code} value={stock.code}>
+                        {stock.code} - {stock.companyName}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Time Range
+                  </label>
+                  <div className="flex space-x-2">
+                    {[
+                      { label: '1W', value: '7' },
+                      { label: '1M', value: '30' },
+                      { label: '3M', value: '90' },
+                      { label: '6M', value: '180' },
+                      { label: '1Y', value: '365' }
+                    ].map(({ label, value }) => (
+                      <button
+                        key={value}
+                        onClick={() => handleTimeRangeChange(value)}
+                        className={`px-4 py-2 text-sm font-medium rounded-md ${
+                          timeRange === value
+                            ? 'bg-blue-500 text-white'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }`}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Performance Chart Display */}
+              {performanceLoading ? (
+                <div className="flex items-center justify-center h-96">
+                  <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+                    <p className="text-gray-600">Loading stock performance data...</p>
+                  </div>
+                </div>
+              ) : stockPerformanceData ? (
+                <div>
+                  {/* Stock Info */}
+                  <div className="mb-6 p-4 bg-blue-50 rounded-lg">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                      {stockPerformanceData.symbol} Performance
+                    </h3>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                      <div>
+                        <span className="text-gray-600">Total Return:</span>
+                        <span className={`ml-2 font-medium ${
+                          stockPerformanceData.metrics.total_return >= 0 ? 'text-green-600' : 'text-red-600'
+                        }`}>
+                          {stockPerformanceData.metrics.total_return_percent?.toFixed(2)}%
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-gray-600">Volatility:</span>
+                        <span className="ml-2 font-medium text-gray-900">
+                          {stockPerformanceData.metrics.volatility_percent?.toFixed(2)}%
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-gray-600">First Price:</span>
+                        <span className="ml-2 font-medium text-gray-900">
+                          ${stockPerformanceData.metrics.first_price?.toFixed(2)}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-gray-600">Last Price:</span>
+                        <span className="ml-2 font-medium text-gray-900">
+                          ${stockPerformanceData.metrics.last_price?.toFixed(2)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Line Chart */}
+                  <div className="h-96 mb-6">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={stockPerformanceData.chart_data}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis 
+                          dataKey="date" 
+                          tickFormatter={(date) => new Date(date).toLocaleDateString()}
+                        />
+                        <YAxis 
+                          tickFormatter={(value) => `$${value.toFixed(2)}`}
+                        />
+                        <Tooltip 
+                          labelFormatter={(label) => new Date(label).toLocaleDateString()}
+                          formatter={(value, name) => [`$${value.toFixed(2)}`, name]}
+                          contentStyle={{ backgroundColor: '#f8f9fa', border: '1px solid #dee2e6' }}
+                        />
+                        <Legend />
+                        <Line 
+                          type="monotone" 
+                          dataKey="close" 
+                          stroke="#3b82f6" 
+                          strokeWidth={2}
+                          name="Close Price"
+                          dot={false}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                  {/* Volume Chart */}
+                  <div className="h-64">
+                    <h4 className="text-md font-semibold text-gray-900 mb-3">Trading Volume</h4>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={stockPerformanceData.chart_data}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis 
+                          dataKey="date" 
+                          tickFormatter={(date) => new Date(date).toLocaleDateString()}
+                        />
+                        <YAxis 
+                          tickFormatter={(value) => `${(value / 1000000).toFixed(1)}M`}
+                        />
+                        <Tooltip 
+                          labelFormatter={(label) => new Date(label).toLocaleDateString()}
+                          formatter={(value, name) => [`${value.toLocaleString()}`, name]}
+                          contentStyle={{ backgroundColor: '#f8f9fa', border: '1px solid #dee2e6' }}
+                        />
+                        <Area 
+                          type="monotone" 
+                          dataKey="volume" 
+                          stroke="#10b981" 
+                          fill="#10b981" 
+                          fillOpacity={0.3}
+                          name="Volume"
+                        />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              ) : selectedStock ? (
+                <div className="flex items-center justify-center h-96">
+                  <div className="text-center">
+                    <p className="text-gray-600 mb-2">Failed to load performance data for {selectedStock}</p>
+                    <p className="text-sm text-gray-500">
+                      This could be due to API rate limits or the stock symbol not being available on Alpha Vantage.
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center justify-center h-96">
+                  <div className="text-center">
+                    <LineChartIcon className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+                    <p className="text-gray-600 mb-2">Select a stock symbol to view performance charts</p>
+                    <p className="text-sm text-gray-500">
+                      Choose from {availableStocks.length} available stocks from your IPO database
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
