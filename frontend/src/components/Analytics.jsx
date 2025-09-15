@@ -639,7 +639,7 @@ const Analytics = () => {
                         {stockPerformanceData.symbol} Performance
                       </h3>
                       <div className="text-xs bg-white px-2 py-1 rounded border">
-                        📊 {stockPerformanceData.source === 'yahoo_finance' ? 'Yahoo Finance' : 'Alpha Vantage'}
+                        📊 Yahoo Finance
                       </div>
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
@@ -660,13 +660,13 @@ const Analytics = () => {
                       <div>
                         <span className="text-gray-600">First Price:</span>
                         <span className="ml-2 font-medium text-gray-900">
-                          ${stockPerformanceData.metrics.first_price?.toFixed(2)}
+                          {formatCurrency(stockPerformanceData.metrics.first_price, getCurrencyInfo(stockPerformanceData))}
                         </span>
                       </div>
                       <div>
                         <span className="text-gray-600">Last Price:</span>
                         <span className="ml-2 font-medium text-gray-900">
-                          ${stockPerformanceData.metrics.last_price?.toFixed(2)}
+                          {formatCurrency(stockPerformanceData.metrics.last_price, getCurrencyInfo(stockPerformanceData))}
                         </span>
                       </div>
                     </div>
