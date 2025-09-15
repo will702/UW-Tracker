@@ -1734,4 +1734,36 @@ def main():
         sys.exit(1)
 
 if __name__ == "__main__":
-    main()
+    print("🚀 Starting UW Tracker Backend API Tests...")
+    print(f"Backend URL: {BACKEND_URL}")
+    print("=" * 80)
+    
+    tester = UWTrackerAPITester()
+    
+    # Run Yahoo Finance-only migration tests (as requested in review)
+    tester.run_yahoo_finance_only_tests()
+    
+    # Print summary
+    print("\n" + "=" * 80)
+    print("📊 TEST SUMMARY")
+    print("=" * 80)
+    
+    total_tests = len(tester.test_results)
+    passed_tests = sum(1 for result in tester.test_results if result["success"])
+    failed_tests = total_tests - passed_tests
+    
+    print(f"Total Tests: {total_tests}")
+    print(f"✅ Passed: {passed_tests}")
+    print(f"❌ Failed: {failed_tests}")
+    print(f"Success Rate: {(passed_tests/total_tests)*100:.1f}%" if total_tests > 0 else "No tests run")
+    
+    if failed_tests > 0:
+        print("\n❌ FAILED TESTS:")
+        for result in tester.test_results:
+            if not result["success"]:
+                print(f"  - {result['test']}: {result['details']}")
+    
+    print("\n🏁 Testing completed!")
+    
+    # Exit with appropriate code
+    sys.exit(0 if failed_tests == 0 else 1)
