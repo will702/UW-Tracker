@@ -747,7 +747,7 @@ const Analytics = () => {
                   <div className="text-center">
                     <p className="text-gray-600 mb-2">Failed to load performance data for {selectedStock}</p>
                     <p className="text-sm text-gray-500">
-                      This could be due to API rate limits or the stock symbol not being available on Alpha Vantage.
+                      This could be due to network issues or the stock symbol not being available on Yahoo Finance.
                     </p>
                   </div>
                 </div>
