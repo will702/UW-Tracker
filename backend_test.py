@@ -1150,6 +1150,170 @@ class UWTrackerAPITester:
         self.log_test("Backend Logs - Verification Note", True, 
                     "✅ Backend logs verification: Check supervisor logs for 'using Yahoo Finance' messages")
 
+    def test_elit_stock_symbol_fix_verification(self):
+        """Test ELIT stock symbol fix - comprehensive verification"""
+        print("\n🎯 ELIT STOCK SYMBOL FIX VERIFICATION - COMPREHENSIVE TESTING...")
+        
+        # Test 1: ELIT Basic Connectivity
+        try:
+            response = self.session.get(f"{self.base_url}/stocks/test/ELIT")
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('status') == 'success':
+                    # Verify ELIT gets formatted to ELIT.JK automatically
+                    symbol = data.get('symbol', '')
+                    if symbol == 'ELIT.JK':
+                        self.log_test("ELIT Fix - Basic Connectivity & Symbol Formatting", True, 
+                                    f"✅ ELIT automatically formatted to {symbol}")
+                    else:
+                        self.log_test("ELIT Fix - Basic Connectivity & Symbol Formatting", False, 
+                                    f"❌ ELIT not formatted correctly: {symbol} (should be ELIT.JK)")
+                    
+                    # Verify data is available
+                    data_available = data.get('data_available', False)
+                    if data_available:
+                        self.log_test("ELIT Fix - Data Availability", True, 
+                                    "✅ ELIT.JK data is available from Yahoo Finance")
+                    else:
+                        self.log_test("ELIT Fix - Data Availability", False, 
+                                    "❌ ELIT.JK data not available")
+                    
+                    # Verify source attribution
+                    source = data.get('source', '')
+                    if source == 'yahoo_finance':
+                        self.log_test("ELIT Fix - Source Attribution", True, 
+                                    f"✅ ELIT shows correct source: {source}")
+                    else:
+                        self.log_test("ELIT Fix - Source Attribution", False, 
+                                    f"❌ ELIT shows wrong source: {source} (should be yahoo_finance)")
+                else:
+                    self.log_test("ELIT Fix - Basic Connectivity", False, 
+                                f"❌ ELIT test failed: {data.get('message', 'Unknown error')}")
+            else:
+                self.log_test("ELIT Fix - Basic Connectivity", False, 
+                            f"❌ HTTP Status: {response.status_code}")
+        except Exception as e:
+            self.log_test("ELIT Fix - Basic Connectivity", False, f"❌ Error: {str(e)}")
+        
+        # Test 2: ELIT Performance Endpoint
+        try:
+            response = self.session.get(f"{self.base_url}/stocks/performance/ELIT?days_back=30")
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('status') == 'success':
+                    # Verify symbol formatting
+                    symbol = data.get('symbol', '')
+                    if symbol == 'ELIT.JK':
+                        self.log_test("ELIT Fix - Performance Symbol Formatting", True, 
+                                    f"✅ ELIT performance endpoint formats to {symbol}")
+                    else:
+                        self.log_test("ELIT Fix - Performance Symbol Formatting", False, 
+                                    f"❌ ELIT performance symbol wrong: {symbol}")
+                    
+                    # Verify Indonesian currency (IDR)
+                    meta_data = data.get('meta_data', {})
+                    company_info = meta_data.get('company_info', {})
+                    currency = company_info.get('currency', '')
+                    currency_symbol = company_info.get('currency_symbol', '')
+                    
+                    if currency == 'IDR':
+                        self.log_test("ELIT Fix - IDR Currency", True, 
+                                    f"✅ ELIT shows correct currency: {currency}")
+                    else:
+                        self.log_test("ELIT Fix - IDR Currency", False, 
+                                    f"❌ ELIT shows wrong currency: {currency} (should be IDR)")
+                    
+                    if currency_symbol == 'Rp':
+                        self.log_test("ELIT Fix - Rupiah Symbol", True, 
+                                    f"✅ ELIT shows correct currency symbol: {currency_symbol}")
+                    else:
+                        self.log_test("ELIT Fix - Rupiah Symbol", False, 
+                                    f"❌ ELIT shows wrong currency symbol: {currency_symbol} (should be Rp)")
+                    
+                    # Verify chart data and metrics are available
+                    chart_data = data.get('chart_data', [])
+                    metrics = data.get('metrics', {})
+                    
+                    if chart_data and len(chart_data) > 0:
+                        self.log_test("ELIT Fix - Chart Data Available", True, 
+                                    f"✅ ELIT chart data available: {len(chart_data)} data points")
+                    else:
+                        self.log_test("ELIT Fix - Chart Data Available", False, 
+                                    "❌ ELIT chart data not available")
+                    
+                    if metrics and 'total_return' in metrics:
+                        self.log_test("ELIT Fix - Performance Metrics", True, 
+                                    f"✅ ELIT performance metrics available: {list(metrics.keys())}")
+                    else:
+                        self.log_test("ELIT Fix - Performance Metrics", False, 
+                                    "❌ ELIT performance metrics not available")
+                    
+                    # Verify source attribution
+                    source = data.get('source', '')
+                    if source == 'yahoo_finance':
+                        self.log_test("ELIT Fix - Performance Source", True, 
+                                    f"✅ ELIT performance shows correct source: {source}")
+                    else:
+                        self.log_test("ELIT Fix - Performance Source", False, 
+                                    f"❌ ELIT performance shows wrong source: {source}")
+                else:
+                    self.log_test("ELIT Fix - Performance Endpoint", False, 
+                                f"❌ ELIT performance failed: {data.get('error', 'Unknown error')}")
+            else:
+                self.log_test("ELIT Fix - Performance Endpoint", False, 
+                            f"❌ HTTP Status: {response.status_code}")
+        except Exception as e:
+            self.log_test("ELIT Fix - Performance Endpoint", False, f"❌ Error: {str(e)}")
+        
+        # Test 3: Verify no Alpha Vantage references in error messages
+        try:
+            # Test with a deliberately invalid Indonesian symbol to check error messages
+            response = self.session.get(f"{self.base_url}/stocks/test/INVALIDINDONESIAN")
+            if response.status_code == 200:
+                data = response.json()
+                message = data.get('message', '').lower()
+                if 'alpha vantage' not in message and 'alphavantage' not in message:
+                    self.log_test("ELIT Fix - No Alpha Vantage References", True, 
+                                "✅ Error messages contain no Alpha Vantage references")
+                else:
+                    self.log_test("ELIT Fix - No Alpha Vantage References", False, 
+                                f"❌ Error message contains Alpha Vantage reference: {data.get('message')}")
+            else:
+                self.log_test("ELIT Fix - No Alpha Vantage References", True, 
+                            f"✅ Error handling working (HTTP {response.status_code})")
+        except Exception as e:
+            self.log_test("ELIT Fix - No Alpha Vantage References", False, f"❌ Error: {str(e)}")
+        
+        # Test 4: Compare ELIT with working Indonesian stock (GOTO)
+        try:
+            goto_response = self.session.get(f"{self.base_url}/stocks/test/GOTO")
+            elit_response = self.session.get(f"{self.base_url}/stocks/test/ELIT")
+            
+            if goto_response.status_code == 200 and elit_response.status_code == 200:
+                goto_data = goto_response.json()
+                elit_data = elit_response.json()
+                
+                goto_success = goto_data.get('status') == 'success'
+                elit_success = elit_data.get('status') == 'success'
+                
+                if goto_success and elit_success:
+                    self.log_test("ELIT Fix - Comparison with GOTO", True, 
+                                "✅ Both ELIT and GOTO work correctly (Indonesian stock formatting)")
+                elif goto_success and not elit_success:
+                    self.log_test("ELIT Fix - Comparison with GOTO", False, 
+                                f"❌ GOTO works but ELIT fails: {elit_data.get('message')}")
+                elif not goto_success and elit_success:
+                    self.log_test("ELIT Fix - Comparison with GOTO", True, 
+                                "✅ ELIT works (GOTO may have issues but that's separate)")
+                else:
+                    self.log_test("ELIT Fix - Comparison with GOTO", False, 
+                                "❌ Both GOTO and ELIT have issues")
+            else:
+                self.log_test("ELIT Fix - Comparison with GOTO", False, 
+                            f"❌ HTTP errors - GOTO: {goto_response.status_code}, ELIT: {elit_response.status_code}")
+        except Exception as e:
+            self.log_test("ELIT Fix - Comparison with GOTO", False, f"❌ Error: {str(e)}")
+
     def test_comprehensive_yahoo_finance_migration(self):
         """Comprehensive test of the Yahoo Finance-only migration"""
         print("\n🎯 Comprehensive Yahoo Finance Migration Test...")
@@ -1157,6 +1321,7 @@ class UWTrackerAPITester:
         test_cases = [
             ('GOTO', 'GOTO.JK', 'IDR', 'Rp', 'Indonesian stock'),
             ('BBCA', 'BBCA.JK', 'IDR', 'Rp', 'Indonesian stock'),
+            ('ELIT', 'ELIT.JK', 'IDR', 'Rp', 'Indonesian stock - NEWLY ADDED'),
             ('AAPL', 'AAPL', 'USD', '$', 'US stock'),
         ]
         
