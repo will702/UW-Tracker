@@ -280,12 +280,27 @@ const Analytics = () => {
     return value > 0 ? `+${percentage}%` : `${percentage}%`;
   };
 
-  const getPerformanceColor = (value) => {
-    if (value > 0.1) return '#22c55e'; // Green for >10%
-    if (value > 0.05) return '#84cc16'; // Light green for >5%
-    if (value > 0) return '#eab308'; // Yellow for positive
-    if (value > -0.05) return '#f97316'; // Orange for small negative
-    return '#ef4444'; // Red for large negative
+  const formatCurrency = (value, currencyInfo) => {
+    if (!value || !currencyInfo) return 'N/A';
+    
+    if (currencyInfo.code === 'IDR') {
+      // Indonesian Rupiah - no decimal places, use thousands separator
+      return `${currencyInfo.symbol}${value.toLocaleString('id-ID', { maximumFractionDigits: 0 })}`;
+    } else {
+      // Other currencies - 2 decimal places
+      return `${currencyInfo.symbol}${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+  };
+
+  const getCurrencyInfo = (stockData) => {
+    if (stockData?.meta_data?.company_info) {
+      return {
+        code: stockData.meta_data.company_info.currency || 'USD',
+        symbol: stockData.meta_data.company_info.currency_symbol || '$'
+      };
+    }
+    // Default to USD for fallback
+    return { code: 'USD', symbol: '$' };
   };
 
   if (loading) {
