@@ -693,7 +693,10 @@ const Analytics = () => {
                         />
                         <Tooltip 
                           labelFormatter={(label) => new Date(label).toLocaleDateString()}
-                          formatter={(value, name) => [`$${value.toFixed(2)}`, name]}
+                          formatter={(value, name) => {
+                            const currencyInfo = getCurrencyInfo(stockPerformanceData);
+                            return [formatCurrency(value, currencyInfo), name];
+                          }}
                           contentStyle={{ backgroundColor: '#f8f9fa', border: '1px solid #dee2e6' }}
                         />
                         <Legend />
