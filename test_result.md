@@ -742,10 +742,22 @@ frontend:
         agent: "testing"
         comment: "✅ RECHARTS INTEGRATION FULLY WORKING: All data visualization issues have been completely resolved. Bar Chart: Now renders 20 visible bars with proper data binding, X-axis shows UW codes correctly, Y-axis displays percentage values, tooltips work on hover, and data ranges from ~26% down to lower values as expected. Pie Chart: Now renders 10 visible pie slices with proper colors, labels display UW codes with percentages (XA 5.8%, HD 4.9%, AI 6.1%, YP 4.5%, LG 4.0%, etc.), hover interactions working correctly. ResponsiveContainer working perfectly for both charts. Chart interactivity, tooltips, and responsiveness verified across desktop, tablet, and mobile viewports. The Recharts integration is now production-ready with full data visualization capabilities."
 
+  - task: "Yahoo Finance ONLY Migration - Full System Verification"
+    implemented: true
+    working: true
+    file: "/app/backend/services/stock_service.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "🎉 YAHOO FINANCE ONLY MIGRATION FULLY VERIFIED - ALL REQUIREMENTS MET: Comprehensive testing confirms the system has been completely migrated to use Yahoo Finance exclusively with proper Indonesian Rupiah currency support. ✅ FULL MIGRATION VERIFIED: All stock requests (GOTO, BBCA, AAPL) use Yahoo Finance only with source='yahoo_finance' in responses. No Alpha Vantage fallback detected. Backend logs show 'using Yahoo Finance' messages consistently. ✅ INDONESIAN STOCK SYMBOL FORMATTING: GOTO automatically formatted to GOTO.JK, BBCA automatically formatted to BBCA.JK, existing .JK symbols preserved correctly. ✅ CURRENCY INFORMATION PERFECT: Indonesian stocks (GOTO.JK, BBCA.JK) show correct currency='IDR' and currency_symbol='Rp', US stocks (AAPL) show correct currency='USD' and currency_symbol='$'. Currency metadata properly included in meta_data.company_info fields. ✅ DATA STRUCTURE VERIFICATION: All responses include required fields (chart_data, metrics, symbol, source, meta_data), chart_data structure consistent with proper OHLCV data, performance metrics calculation working correctly, source field consistently shows 'yahoo_finance'. ✅ COMPREHENSIVE TESTING: 23/23 tests passed (100% success rate), all Indonesian stocks show IDR currency correctly, all US stocks show USD currency correctly, no Alpha Vantage dependencies remaining. The Yahoo Finance-only system is production-ready and meets all specified requirements for Indonesian Rupiah currency support."
+
 metadata:
   created_by: "testing_agent"
-  version: "1.1"
-  test_sequence: 3
+  version: "1.2"
+  test_sequence: 4
   run_ui: false
 
 test_plan:
