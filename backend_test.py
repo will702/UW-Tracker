@@ -1150,6 +1150,236 @@ class UWTrackerAPITester:
         self.log_test("Backend Logs - Verification Note", True, 
                     "✅ Backend logs verification: Check supervisor logs for 'using Yahoo Finance' messages")
 
+    def test_universal_indonesian_stock_formatting(self):
+        """Test universal Indonesian stock formatting - ALL stocks get .JK suffix automatically"""
+        print("\n🇮🇩 UNIVERSAL INDONESIAN STOCK FORMATTING TESTING - COMPREHENSIVE VERIFICATION...")
+        
+        # Test 1: Various IPO Stock Symbols (should become .JK)
+        ipo_stocks = ["BLOG", "COIN", "PMUI", "CDIA", "MAPI"]
+        
+        for stock in ipo_stocks:
+            try:
+                response = self.session.get(f"{self.base_url}/stocks/test/{stock}")
+                if response.status_code == 200:
+                    data = response.json()
+                    if data.get('status') == 'success':
+                        # Verify stock gets formatted to .JK automatically
+                        symbol = data.get('symbol', '')
+                        expected_symbol = f"{stock}.JK"
+                        if symbol == expected_symbol:
+                            self.log_test(f"Universal .JK Formatting - {stock}", True, 
+                                        f"✅ {stock} automatically formatted to {symbol}")
+                        else:
+                            self.log_test(f"Universal .JK Formatting - {stock}", False, 
+                                        f"❌ {stock} not formatted correctly: {symbol} (should be {expected_symbol})")
+                        
+                        # Verify source attribution
+                        source = data.get('source', '')
+                        if source == 'yahoo_finance':
+                            self.log_test(f"Universal .JK Source - {stock}", True, 
+                                        f"✅ {stock} shows correct source: {source}")
+                        else:
+                            self.log_test(f"Universal .JK Source - {stock}", False, 
+                                        f"❌ {stock} shows wrong source: {source}")
+                    else:
+                        self.log_test(f"Universal .JK Formatting - {stock}", False, 
+                                    f"❌ {stock} test failed: {data.get('message', 'Unknown error')}")
+                else:
+                    self.log_test(f"Universal .JK Formatting - {stock}", False, 
+                                f"❌ {stock} HTTP Status: {response.status_code}")
+            except Exception as e:
+                self.log_test(f"Universal .JK Formatting - {stock}", False, f"❌ {stock} Error: {str(e)}")
+        
+        # Test 2: International Stocks (should NOT get .JK)
+        international_stocks = ["AAPL", "MSFT", "GOOGL"]
+        
+        for stock in international_stocks:
+            try:
+                response = self.session.get(f"{self.base_url}/stocks/test/{stock}")
+                if response.status_code == 200:
+                    data = response.json()
+                    if data.get('status') == 'success':
+                        # Verify international stock remains unchanged
+                        symbol = data.get('symbol', '')
+                        if symbol == stock:
+                            self.log_test(f"International Stock Unchanged - {stock}", True, 
+                                        f"✅ {stock} correctly remains as {symbol}")
+                        else:
+                            self.log_test(f"International Stock Unchanged - {stock}", False, 
+                                        f"❌ {stock} incorrectly changed to: {symbol}")
+                        
+                        # Verify source attribution
+                        source = data.get('source', '')
+                        if source == 'yahoo_finance':
+                            self.log_test(f"International Stock Source - {stock}", True, 
+                                        f"✅ {stock} shows correct source: {source}")
+                        else:
+                            self.log_test(f"International Stock Source - {stock}", False, 
+                                        f"❌ {stock} shows wrong source: {source}")
+                    else:
+                        self.log_test(f"International Stock - {stock}", False, 
+                                    f"❌ {stock} test failed: {data.get('message', 'Unknown error')}")
+                else:
+                    self.log_test(f"International Stock - {stock}", False, 
+                                f"❌ {stock} HTTP Status: {response.status_code}")
+            except Exception as e:
+                self.log_test(f"International Stock - {stock}", False, f"❌ {stock} Error: {str(e)}")
+        
+        # Test 3: Already Formatted Stocks (should remain unchanged)
+        already_formatted = ["GOTO.JK", "BBCA.JK"]
+        
+        for stock in already_formatted:
+            try:
+                response = self.session.get(f"{self.base_url}/stocks/test/{stock}")
+                if response.status_code == 200:
+                    data = response.json()
+                    if data.get('status') == 'success':
+                        # Verify already formatted stock remains unchanged
+                        symbol = data.get('symbol', '')
+                        if symbol == stock:
+                            self.log_test(f"Already Formatted - {stock}", True, 
+                                        f"✅ {stock} correctly remains as {symbol}")
+                        else:
+                            self.log_test(f"Already Formatted - {stock}", False, 
+                                        f"❌ {stock} incorrectly changed to: {symbol}")
+                        
+                        # Verify source attribution
+                        source = data.get('source', '')
+                        if source == 'yahoo_finance':
+                            self.log_test(f"Already Formatted Source - {stock}", True, 
+                                        f"✅ {stock} shows correct source: {source}")
+                        else:
+                            self.log_test(f"Already Formatted Source - {stock}", False, 
+                                        f"❌ {stock} shows wrong source: {source}")
+                    else:
+                        self.log_test(f"Already Formatted - {stock}", False, 
+                                    f"❌ {stock} test failed: {data.get('message', 'Unknown error')}")
+                else:
+                    self.log_test(f"Already Formatted - {stock}", False, 
+                                f"❌ {stock} HTTP Status: {response.status_code}")
+            except Exception as e:
+                self.log_test(f"Already Formatted - {stock}", False, f"❌ {stock} Error: {str(e)}")
+
+    def test_universal_formatting_performance_endpoints(self):
+        """Test performance endpoints with universal Indonesian formatting"""
+        print("\n📈 UNIVERSAL FORMATTING - PERFORMANCE ENDPOINTS TESTING...")
+        
+        # Test performance endpoints with Indonesian stocks
+        test_stocks = ["BLOG", "COIN"]
+        
+        for stock in test_stocks:
+            try:
+                response = self.session.get(f"{self.base_url}/stocks/performance/{stock}?days_back=30")
+                if response.status_code == 200:
+                    data = response.json()
+                    if data.get('status') == 'success':
+                        # Verify symbol formatting
+                        symbol = data.get('symbol', '')
+                        expected_symbol = f"{stock}.JK"
+                        if symbol == expected_symbol:
+                            self.log_test(f"Performance Formatting - {stock}", True, 
+                                        f"✅ {stock} performance endpoint formatted to {symbol}")
+                        else:
+                            self.log_test(f"Performance Formatting - {stock}", False, 
+                                        f"❌ {stock} performance not formatted correctly: {symbol}")
+                        
+                        # Verify Indonesian currency (IDR)
+                        meta_data = data.get('meta_data', {})
+                        company_info = meta_data.get('company_info', {})
+                        currency = company_info.get('currency', '')
+                        currency_symbol = company_info.get('currency_symbol', '')
+                        
+                        if currency == 'IDR':
+                            self.log_test(f"Performance Currency - {stock} IDR", True, 
+                                        f"✅ {stock} shows correct currency: {currency}")
+                        else:
+                            self.log_test(f"Performance Currency - {stock} IDR", False, 
+                                        f"❌ {stock} shows wrong currency: {currency} (should be IDR)")
+                        
+                        if currency_symbol == 'Rp':
+                            self.log_test(f"Performance Currency Symbol - {stock}", True, 
+                                        f"✅ {stock} shows correct currency symbol: {currency_symbol}")
+                        else:
+                            self.log_test(f"Performance Currency Symbol - {stock}", False, 
+                                        f"❌ {stock} shows wrong currency symbol: {currency_symbol} (should be Rp)")
+                        
+                        # Verify chart data structure
+                        chart_data = data.get('chart_data', [])
+                        if chart_data and len(chart_data) > 0:
+                            self.log_test(f"Performance Chart Data - {stock}", True, 
+                                        f"✅ {stock} performance returned {len(chart_data)} data points")
+                        else:
+                            self.log_test(f"Performance Chart Data - {stock}", False, 
+                                        f"❌ {stock} performance returned no chart data")
+                    else:
+                        self.log_test(f"Performance Endpoint - {stock}", False, 
+                                    f"❌ {stock} performance failed: {data.get('error', 'Unknown error')}")
+                else:
+                    self.log_test(f"Performance Endpoint - {stock}", False, 
+                                f"❌ {stock} performance HTTP Status: {response.status_code}")
+            except Exception as e:
+                self.log_test(f"Performance Endpoint - {stock}", False, f"❌ {stock} Error: {str(e)}")
+
+    def test_universal_formatting_comprehensive_verification(self):
+        """Comprehensive verification of universal formatting system"""
+        print("\n🔍 UNIVERSAL FORMATTING - COMPREHENSIVE SYSTEM VERIFICATION...")
+        
+        # Test that the system works without manual configuration
+        # This tests the "universal" aspect - no need to maintain patterns list
+        random_indonesian_stocks = ["ELIT", "BUMI", "INDY", "TECH", "DIGI"]
+        
+        for stock in random_indonesian_stocks:
+            try:
+                response = self.session.get(f"{self.base_url}/stocks/test/{stock}")
+                if response.status_code == 200:
+                    data = response.json()
+                    # Verify formatting regardless of success/failure
+                    symbol = data.get('symbol', '')
+                    expected_symbol = f"{stock}.JK"
+                    
+                    if symbol == expected_symbol:
+                        self.log_test(f"Universal System - {stock} Formatting", True, 
+                                    f"✅ {stock} automatically formatted to {symbol} (universal system working)")
+                    else:
+                        self.log_test(f"Universal System - {stock} Formatting", False, 
+                                    f"❌ {stock} not formatted correctly: {symbol} (universal system failed)")
+                    
+                    # Verify source is always yahoo_finance
+                    source = data.get('source', '')
+                    if source == 'yahoo_finance':
+                        self.log_test(f"Universal System - {stock} Source", True, 
+                                    f"✅ {stock} uses Yahoo Finance: {source}")
+                    else:
+                        self.log_test(f"Universal System - {stock} Source", False, 
+                                    f"❌ {stock} wrong source: {source}")
+                else:
+                    self.log_test(f"Universal System - {stock}", False, 
+                                f"❌ {stock} HTTP Status: {response.status_code}")
+            except Exception as e:
+                self.log_test(f"Universal System - {stock}", False, f"❌ {stock} Error: {str(e)}")
+        
+        # Test that international stocks are properly excluded
+        more_international = ["NVDA", "TSLA", "META"]
+        
+        for stock in more_international:
+            try:
+                response = self.session.get(f"{self.base_url}/stocks/test/{stock}")
+                if response.status_code == 200:
+                    data = response.json()
+                    symbol = data.get('symbol', '')
+                    
+                    if symbol == stock:
+                        self.log_test(f"Universal System - {stock} International", True, 
+                                    f"✅ {stock} correctly excluded from .JK formatting")
+                    else:
+                        self.log_test(f"Universal System - {stock} International", False, 
+                                    f"❌ {stock} incorrectly formatted to: {symbol}")
+                else:
+                    self.log_test(f"Universal System - {stock} International", False, 
+                                f"❌ {stock} HTTP Status: {response.status_code}")
+            except Exception as e:
+                self.log_test(f"Universal System - {stock} International", False, f"❌ {stock} Error: {str(e)}")
+
     def test_elit_stock_symbol_fix_verification(self):
         """Test ELIT stock symbol fix - comprehensive verification"""
         print("\n🎯 ELIT STOCK SYMBOL FIX VERIFICATION - COMPREHENSIVE TESTING...")
