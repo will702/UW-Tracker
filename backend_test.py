@@ -1614,6 +1614,32 @@ class UWTrackerAPITester:
             except Exception as e:
                 print(f"   Error deleting test record {record_id}: {str(e)}")
     
+    def run_yahoo_finance_only_tests(self):
+        """Run comprehensive Yahoo Finance-only migration tests"""
+        print("=" * 80)
+        print("🔄 YAHOO FINANCE ONLY MIGRATION TESTING")
+        print("=" * 80)
+        
+        # Test Yahoo Finance-only migration
+        self.test_yahoo_finance_only_migration_verification()
+        
+        # Test currency information
+        self.test_currency_information_indonesian_stocks()
+        self.test_currency_information_us_stocks()
+        
+        # Test data structure
+        self.test_data_structure_verification_yahoo_finance()
+        
+        # Test backend logs
+        self.test_backend_logs_yahoo_finance_only()
+        
+        # Comprehensive test
+        self.test_comprehensive_yahoo_finance_migration()
+        
+        print("\n" + "=" * 80)
+        print("🎯 YAHOO FINANCE ONLY MIGRATION TESTING COMPLETE")
+        print("=" * 80)
+
     def run_all_tests(self):
         """Run all API tests"""
         print("🚀 Starting UW Tracker Backend API Tests")
