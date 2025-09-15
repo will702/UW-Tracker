@@ -105,15 +105,15 @@ const Analytics = () => {
       if (result.status === 'success') {
         setStockPerformanceData(result);
       } else {
-        // Better error handling for specific Alpha Vantage issues
+        // Better error handling for Yahoo Finance issues
         let errorMessage = result.error || 'Failed to fetch stock performance data';
         
         if (errorMessage.includes('rate limit') || errorMessage.includes('Rate Limit')) {
-          errorMessage = `⏱️ Alpha Vantage API rate limit reached (25 requests/day for free tier). Please try again tomorrow or contact support for premium access.`;
-        } else if (errorMessage.includes('No data available')) {
-          errorMessage = `📊 No data available for ${stockCode}. Try using ${stockCode}.JK format for Indonesian stocks.`;
-        } else if (errorMessage.includes('Error Message')) {
-          errorMessage = `❌ Stock symbol not found: ${stockCode}. Please verify the symbol or try adding .JK suffix for Indonesian stocks.`;
+          errorMessage = `⏱️ Yahoo Finance temporary issue. Please try again in a moment.`;
+        } else if (errorMessage.includes('No data available') || errorMessage.includes('not found')) {
+          errorMessage = `📊 Stock symbol "${stockCode}" not found on Yahoo Finance. Please verify the symbol or try a different stock.`;
+        } else if (errorMessage.includes('connection') || errorMessage.includes('timeout')) {
+          errorMessage = `🌐 Network connection issue. Please check your internet connection and try again.`;
         }
         
         throw new Error(errorMessage);
