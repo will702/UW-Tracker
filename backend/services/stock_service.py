@@ -21,7 +21,8 @@ class StockDataService:
             'GOTO', 'BBCA', 'BMRI', 'BBRI', 'TLKM', 'ASII', 'UNVR', 'ICBP',
             'GGRM', 'INDF', 'KLBF', 'PGAS', 'SMGR', 'JSMR', 'ADRO', 'ITMG',
             'PTBA', 'ANTM', 'INCO', 'TINS', 'WSKT', 'WIKA', 'PTPP', 'ADHI',
-            'BLOG', 'PMUI', 'COIN', 'CDIA', 'AMRT', 'MAPI', 'SCMA', 'PSAB'
+            'BLOG', 'PMUI', 'COIN', 'CDIA', 'AMRT', 'MAPI', 'SCMA', 'PSAB',
+            'ELIT'  # Added for PT Data Sinergitama Jaya Tbk
         ]
         
         # If it's a known Indonesian stock and doesn't have .JK, add it
