@@ -27,6 +27,7 @@ class YahooFinanceService:
         if symbol in indonesian_patterns and not symbol.endswith('.JK'):
             symbol = f"{symbol}.JK"
         
+        return symbol
     def get_currency_info(self, symbol: str, info: dict) -> Dict:
         """
         Get currency information for proper price formatting
