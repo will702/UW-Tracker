@@ -12,24 +12,28 @@ class StockDataService:
     def format_stock_symbol(self, symbol: str) -> str:
         """
         Format stock symbol for Yahoo Finance API
-        Automatically add .JK suffix for Indonesian stocks if not present
+        Since this is an Indonesian IPO tracker, automatically add .JK suffix to all stocks
+        unless they are known international stocks
         """
         symbol = symbol.upper().strip()
         
-        # List of common Indonesian stock codes that need .JK suffix
-        indonesian_patterns = [
-            'GOTO', 'BBCA', 'BMRI', 'BBRI', 'TLKM', 'ASII', 'UNVR', 'ICBP',
-            'GGRM', 'INDF', 'KLBF', 'PGAS', 'SMGR', 'JSMR', 'ADRO', 'ITMG',
-            'PTBA', 'ANTM', 'INCO', 'TINS', 'WSKT', 'WIKA', 'PTPP', 'ADHI',
-            'BLOG', 'PMUI', 'COIN', 'CDIA', 'AMRT', 'MAPI', 'SCMA', 'PSAB',
-            'ELIT'  # Added for PT Data Sinergitama Jaya Tbk
+        # If already has .JK suffix, keep it as is
+        if symbol.endswith('.JK'):
+            return symbol
+        
+        # List of known international/US stocks that should NOT get .JK suffix
+        international_stocks = [
+            'AAPL', 'MSFT', 'GOOGL', 'GOOGLE', 'AMZN', 'TSLA', 'META', 'NVDA', 
+            'NFLX', 'CRM', 'ORCL', 'IBM', 'INTC', 'AMD', 'PYPL', 'ADBE',
+            'UBER', 'LYFT', 'ZOOM', 'SPOT', 'SQ', 'ROKU', 'TWTR', 'SNAP'
         ]
         
-        # If it's a known Indonesian stock and doesn't have .JK, add it
-        if symbol in indonesian_patterns and not symbol.endswith('.JK'):
-            symbol = f"{symbol}.JK"
+        # If it's a known international stock, keep as is
+        if symbol in international_stocks:
+            return symbol
         
-        return symbol
+        # For all other stocks (Indonesian IPO stocks), add .JK suffix
+        return f"{symbol}.JK"
         
     async def get_daily_data(self, symbol: str, outputsize: str = 'compact') -> Dict:
         """
