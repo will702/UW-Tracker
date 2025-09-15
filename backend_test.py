@@ -1201,6 +1201,192 @@ class UWTrackerAPITester:
             except Exception as e:
                 self.log_test(f"Comprehensive - {original_symbol} ({description})", False, f"❌ Error: {str(e)}")
 
+    def test_elit_stock_symbol_debugging(self):
+        """Debug the specific ELIT stock symbol issue reported by user"""
+        print("\n🔍 ELIT STOCK SYMBOL DEBUGGING - Comprehensive Investigation...")
+        
+        # Test 1: ELIT Basic Connectivity
+        print("\n1. Testing ELIT Basic Connectivity...")
+        try:
+            response = self.session.get(f"{self.base_url}/stocks/test/ELIT")
+            if response.status_code == 200:
+                data = response.json()
+                status = data.get('status', '')
+                symbol = data.get('symbol', '')
+                original_symbol = data.get('original_symbol', '')
+                source = data.get('source', '')
+                error_msg = data.get('message', '')
+                
+                self.log_test("ELIT Debug - Basic Connectivity", status == 'success', 
+                            f"Status: {status}, Symbol: {symbol}, Original: {original_symbol}, Source: {source}")
+                
+                if status == 'error':
+                    self.log_test("ELIT Debug - Error Message Analysis", True, 
+                                f"Error message: '{error_msg}' - Checking for Alpha Vantage references")
+                    
+                    # Check if error message mentions Alpha Vantage
+                    if 'alpha vantage' in error_msg.lower() or 'alphavantage' in error_msg.lower():
+                        self.log_test("ELIT Debug - Alpha Vantage Reference Found", False, 
+                                    f"❌ CRITICAL: Error message still references Alpha Vantage: '{error_msg}'")
+                    else:
+                        self.log_test("ELIT Debug - No Alpha Vantage Reference", True, 
+                                    f"✅ Good: Error message doesn't mention Alpha Vantage")
+                
+                # Check symbol formatting
+                if symbol == 'ELIT.JK':
+                    self.log_test("ELIT Debug - Symbol Formatting", True, 
+                                f"✅ ELIT correctly formatted to ELIT.JK")
+                elif symbol == 'ELIT':
+                    self.log_test("ELIT Debug - Symbol Formatting", True, 
+                                f"✅ ELIT kept as ELIT (not in Indonesian patterns)")
+                else:
+                    self.log_test("ELIT Debug - Symbol Formatting", False, 
+                                f"❌ Unexpected symbol formatting: {symbol}")
+            else:
+                self.log_test("ELIT Debug - Basic Connectivity", False, 
+                            f"❌ HTTP Status: {response.status_code}")
+        except Exception as e:
+            self.log_test("ELIT Debug - Basic Connectivity", False, f"❌ Error: {str(e)}")
+        
+        # Test 2: ELIT Performance Endpoint
+        print("\n2. Testing ELIT Performance Endpoint...")
+        try:
+            response = self.session.get(f"{self.base_url}/stocks/performance/ELIT?days_back=30")
+            if response.status_code == 200:
+                data = response.json()
+                status = data.get('status', '')
+                error_msg = data.get('error', '')
+                source = data.get('source', '')
+                
+                self.log_test("ELIT Debug - Performance Endpoint", status == 'success', 
+                            f"Status: {status}, Source: {source}")
+                
+                if status == 'error':
+                    self.log_test("ELIT Debug - Performance Error Analysis", True, 
+                                f"Performance error: '{error_msg}'")
+                    
+                    # Check for Alpha Vantage references in error
+                    if 'alpha vantage' in error_msg.lower() or 'alphavantage' in error_msg.lower():
+                        self.log_test("ELIT Debug - Performance Alpha Vantage Reference", False, 
+                                    f"❌ CRITICAL: Performance error mentions Alpha Vantage: '{error_msg}'")
+                    else:
+                        self.log_test("ELIT Debug - Performance No Alpha Vantage Reference", True, 
+                                    f"✅ Good: Performance error doesn't mention Alpha Vantage")
+            elif response.status_code == 500:
+                # Check if 500 error contains Alpha Vantage reference
+                try:
+                    error_data = response.json()
+                    error_detail = error_data.get('detail', '')
+                    self.log_test("ELIT Debug - Performance 500 Error", True, 
+                                f"500 Error detail: '{error_detail}'")
+                    
+                    if 'alpha vantage' in error_detail.lower() or 'alphavantage' in error_detail.lower():
+                        self.log_test("ELIT Debug - 500 Error Alpha Vantage Reference", False, 
+                                    f"❌ CRITICAL: 500 error mentions Alpha Vantage: '{error_detail}'")
+                    else:
+                        self.log_test("ELIT Debug - 500 Error No Alpha Vantage Reference", True, 
+                                    f"✅ Good: 500 error doesn't mention Alpha Vantage")
+                except:
+                    self.log_test("ELIT Debug - Performance Endpoint", False, 
+                                f"❌ HTTP 500 Status (unable to parse error)")
+            else:
+                self.log_test("ELIT Debug - Performance Endpoint", False, 
+                            f"❌ HTTP Status: {response.status_code}")
+        except Exception as e:
+            self.log_test("ELIT Debug - Performance Endpoint", False, f"❌ Error: {str(e)}")
+        
+        # Test 3: Indonesian Stock Symbol Variations
+        print("\n3. Testing Indonesian Stock Symbol Variations...")
+        variations = [
+            ('ELIT', 'Test ELIT without .JK'),
+            ('ELIT.JK', 'Test ELIT with .JK')
+        ]
+        
+        for symbol_variant, description in variations:
+            try:
+                response = self.session.get(f"{self.base_url}/stocks/test/{symbol_variant}")
+                if response.status_code == 200:
+                    data = response.json()
+                    status = data.get('status', '')
+                    returned_symbol = data.get('symbol', '')
+                    source = data.get('source', '')
+                    
+                    self.log_test(f"ELIT Debug - {description}", status == 'success', 
+                                f"Status: {status}, Returned symbol: {returned_symbol}, Source: {source}")
+                else:
+                    self.log_test(f"ELIT Debug - {description}", False, 
+                                f"❌ HTTP Status: {response.status_code}")
+            except Exception as e:
+                self.log_test(f"ELIT Debug - {description}", False, f"❌ Error: {str(e)}")
+        
+        # Test 4: Compare with Working Stocks
+        print("\n4. Comparing ELIT with Known Working Stocks...")
+        working_stocks = [
+            ('GOTO', 'Known working Indonesian stock'),
+            ('BBCA', 'Known working Indonesian stock'),
+            ('AAPL', 'Known working US stock')
+        ]
+        
+        for symbol, description in working_stocks:
+            try:
+                response = self.session.get(f"{self.base_url}/stocks/test/{symbol}")
+                if response.status_code == 200:
+                    data = response.json()
+                    status = data.get('status', '')
+                    returned_symbol = data.get('symbol', '')
+                    source = data.get('source', '')
+                    
+                    self.log_test(f"ELIT Debug - Compare {symbol}", status == 'success', 
+                                f"Status: {status}, Symbol: {returned_symbol}, Source: {source}")
+                    
+                    # Test performance endpoint for comparison
+                    perf_response = self.session.get(f"{self.base_url}/stocks/performance/{symbol}?days_back=30")
+                    if perf_response.status_code == 200:
+                        perf_data = perf_response.json()
+                        perf_status = perf_data.get('status', '')
+                        self.log_test(f"ELIT Debug - Compare {symbol} Performance", perf_status == 'success', 
+                                    f"Performance status: {perf_status}")
+                    else:
+                        self.log_test(f"ELIT Debug - Compare {symbol} Performance", False, 
+                                    f"Performance HTTP Status: {perf_response.status_code}")
+                else:
+                    self.log_test(f"ELIT Debug - Compare {symbol}", False, 
+                                f"❌ HTTP Status: {response.status_code}")
+            except Exception as e:
+                self.log_test(f"ELIT Debug - Compare {symbol}", False, f"❌ Error: {str(e)}")
+        
+        # Test 5: Check if ELIT is in Indonesian patterns
+        print("\n5. Checking ELIT Symbol Pattern Recognition...")
+        try:
+            # This is a logical test - check if ELIT should be treated as Indonesian stock
+            # Based on the code, ELIT is not in the indonesian_patterns list
+            indonesian_patterns = [
+                'GOTO', 'BBCA', 'BMRI', 'BBRI', 'TLKM', 'ASII', 'UNVR', 'ICBP',
+                'GGRM', 'INDF', 'KLBF', 'PGAS', 'SMGR', 'JSMR', 'ADRO', 'ITMG',
+                'PTBA', 'ANTM', 'INCO', 'TINS', 'WSKT', 'WIKA', 'PTPP', 'ADHI',
+                'BLOG', 'PMUI', 'COIN', 'CDIA', 'AMRT', 'MAPI', 'SCMA', 'PSAB'
+            ]
+            
+            if 'ELIT' in indonesian_patterns:
+                self.log_test("ELIT Debug - Indonesian Pattern Recognition", True, 
+                            "✅ ELIT is in Indonesian patterns list - should get .JK suffix")
+            else:
+                self.log_test("ELIT Debug - Indonesian Pattern Recognition", True, 
+                            "✅ ELIT is NOT in Indonesian patterns list - should remain as ELIT")
+                
+                # Additional test: Check if ELIT.JK exists on Yahoo Finance
+                self.log_test("ELIT Debug - Pattern Analysis", True, 
+                            "📝 ELIT not in predefined Indonesian patterns. Testing both ELIT and ELIT.JK to see which works on Yahoo Finance.")
+        except Exception as e:
+            self.log_test("ELIT Debug - Pattern Recognition", False, f"❌ Error: {str(e)}")
+        
+        print("\n🔍 ELIT DEBUGGING SUMMARY:")
+        print("   - Testing ELIT basic connectivity and symbol formatting")
+        print("   - Checking for Alpha Vantage error message references")
+        print("   - Comparing ELIT behavior with known working stocks")
+        print("   - Analyzing whether ELIT should be treated as Indonesian stock")
+        print("   - Investigating if ELIT.JK is valid on Yahoo Finance")
+
     def test_yahoo_finance_fallback_basic_connectivity(self):
         """Test Yahoo Finance fallback system - Basic Connectivity"""
         print("\n🔄 Testing Yahoo Finance Fallback System - Basic Connectivity...")
