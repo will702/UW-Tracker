@@ -104,6 +104,8 @@ class YahooFinanceService:
                 }
             
             # Create metadata similar to Alpha Vantage format
+            currency_info = self.get_currency_info(formatted_symbol, info)
+            
             meta_data = {
                 '1. Information': f'Daily Prices (open, high, low, close) and Volumes for {formatted_symbol}',
                 '2. Symbol': formatted_symbol,
@@ -112,7 +114,8 @@ class YahooFinanceService:
                 '5. Time Zone': 'US/Eastern',
                 'company_info': {
                     'longName': info.get('longName', ''),
-                    'currency': info.get('currency', 'USD'),
+                    'currency': currency_info['code'],
+                    'currency_symbol': currency_info['symbol'],
                     'exchange': info.get('exchange', ''),
                     'market': info.get('market', ''),
                     'country': info.get('country', '')
