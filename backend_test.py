@@ -2222,6 +2222,13 @@ class UWTrackerAPITester:
             print("❌ API health check failed. Stopping tests.")
             return False
         
+        # Universal Indonesian Stock Formatting Tests (New Implementation)
+        print("\n🇮🇩 UNIVERSAL INDONESIAN STOCK FORMATTING TESTS")
+        print("-" * 50)
+        self.test_universal_indonesian_stock_formatting()
+        self.test_universal_formatting_performance_endpoints()
+        self.test_universal_formatting_comprehensive_verification()
+        
         # Yahoo Finance Fallback System Tests (New Implementation)
         print("\n🔄 YAHOO FINANCE FALLBACK SYSTEM TESTS")
         print("-" * 50)
