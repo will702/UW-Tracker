@@ -590,7 +590,7 @@ const Analytics = () => {
                     ))}
                   </select>
                   <p className="text-xs text-gray-500 mt-1">
-                    💡 Indonesian stocks automatically formatted with .JK suffix and priced in Rupiah (IDR)
+                    💡 All stocks automatically formatted with .JK suffix and priced in Indonesian Rupiah (IDR)
                   </p>
                 </div>
                 
