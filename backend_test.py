@@ -1806,6 +1806,9 @@ class UWTrackerAPITester:
         print("🔄 YAHOO FINANCE ONLY MIGRATION TESTING")
         print("=" * 80)
         
+        # ELIT Stock Symbol Debugging (Priority Test)
+        self.test_elit_stock_symbol_debugging()
+        
         # Test Yahoo Finance-only migration
         self.test_yahoo_finance_only_migration_verification()
         
