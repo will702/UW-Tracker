@@ -682,7 +682,14 @@ const Analytics = () => {
                           tickFormatter={(date) => new Date(date).toLocaleDateString()}
                         />
                         <YAxis 
-                          tickFormatter={(value) => `$${value.toFixed(2)}`}
+                          tickFormatter={(value) => {
+                            const currencyInfo = getCurrencyInfo(stockPerformanceData);
+                            if (currencyInfo.code === 'IDR') {
+                              return `${currencyInfo.symbol}${Math.round(value).toLocaleString('id-ID')}`;
+                            } else {
+                              return `${currencyInfo.symbol}${value.toFixed(0)}`;
+                            }
+                          }}
                         />
                         <Tooltip 
                           labelFormatter={(label) => new Date(label).toLocaleDateString()}
