@@ -96,20 +96,21 @@ async def test_stock_api(symbol: str):
             return {
                 'status': 'error',
                 'message': result.get('error'),
-                'api_key_configured': bool(stock_service.api_key)
+                'source': 'yahoo_finance'
             }
         
         # Return basic info without full data
         return {
             'status': 'success',
-            'symbol': symbol,
-            'api_key_configured': True,
+            'symbol': result.get('symbol', symbol),
+            'original_symbol': result.get('original_symbol', symbol),
             'data_available': bool(result.get('data')),
-            'meta_data': result.get('meta_data', {})
+            'meta_data': result.get('meta_data', {}),
+            'source': 'yahoo_finance'
         }
     except Exception as e:
         return {
             'status': 'error',
             'message': str(e),
-            'api_key_configured': bool(stock_service.api_key)
+            'source': 'yahoo_finance'
         }
