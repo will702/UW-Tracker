@@ -27,7 +27,40 @@ class YahooFinanceService:
         if symbol in indonesian_patterns and not symbol.endswith('.JK'):
             symbol = f"{symbol}.JK"
         
-        return symbol
+    def get_currency_info(self, symbol: str, info: dict) -> Dict:
+        """
+        Get currency information for proper price formatting
+        """
+        currency = info.get('currency', 'USD')
+        
+        # Indonesian stocks should be in IDR (Indonesian Rupiah)
+        if symbol.endswith('.JK'):
+            currency = 'IDR'
+        
+        currency_symbol = {
+            'IDR': 'Rp',  # Indonesian Rupiah
+            'USD': '$',   # US Dollar
+            'EUR': '€',   # Euro
+            'GBP': '£',   # British Pound
+            'JPY': '¥',   # Japanese Yen
+        }.get(currency, currency)
+        
+        return {
+            'code': currency,
+            'symbol': currency_symbol,
+            'is_indonesian': symbol.endswith('.JK')
+        }
+    
+    def format_price(self, price: float, currency_info: Dict) -> str:
+        """
+        Format price according to currency
+        """
+        if currency_info['code'] == 'IDR':
+            # Indonesian Rupiah - no decimal places, use thousands separator
+            return f"{currency_info['symbol']}{price:,.0f}"
+        else:
+            # Other currencies - 2 decimal places
+            return f"{currency_info['symbol']}{price:.2f}"
         
     async def get_daily_data(self, symbol: str, period: str = '3mo') -> Dict:
         """
