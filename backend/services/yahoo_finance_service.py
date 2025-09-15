@@ -324,6 +324,7 @@ class YahooFinanceService:
             'original_symbol': stock_data['original_symbol'],
             'chart_data': chart_result['chart_data'],
             'metrics': metrics,
+            'meta_data': stock_data.get('meta_data', {}),  # Include meta_data with currency info
             'status': 'success',
             'days_back': days_back,
             'source': 'yahoo_finance'
