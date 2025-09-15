@@ -754,6 +754,18 @@ frontend:
         agent: "testing"
         comment: "🎉 YAHOO FINANCE ONLY MIGRATION FULLY VERIFIED - ALL REQUIREMENTS MET: Comprehensive testing confirms the system has been completely migrated to use Yahoo Finance exclusively with proper Indonesian Rupiah currency support. ✅ FULL MIGRATION VERIFIED: All stock requests (GOTO, BBCA, AAPL) use Yahoo Finance only with source='yahoo_finance' in responses. No Alpha Vantage fallback detected. Backend logs show 'using Yahoo Finance' messages consistently. ✅ INDONESIAN STOCK SYMBOL FORMATTING: GOTO automatically formatted to GOTO.JK, BBCA automatically formatted to BBCA.JK, existing .JK symbols preserved correctly. ✅ CURRENCY INFORMATION PERFECT: Indonesian stocks (GOTO.JK, BBCA.JK) show correct currency='IDR' and currency_symbol='Rp', US stocks (AAPL) show correct currency='USD' and currency_symbol='$'. Currency metadata properly included in meta_data.company_info fields. ✅ DATA STRUCTURE VERIFICATION: All responses include required fields (chart_data, metrics, symbol, source, meta_data), chart_data structure consistent with proper OHLCV data, performance metrics calculation working correctly, source field consistently shows 'yahoo_finance'. ✅ COMPREHENSIVE TESTING: 23/23 tests passed (100% success rate), all Indonesian stocks show IDR currency correctly, all US stocks show USD currency correctly, no Alpha Vantage dependencies remaining. The Yahoo Finance-only system is production-ready and meets all specified requirements for Indonesian Rupiah currency support."
 
+  - task: "ELIT Stock Symbol Debugging - User Reported Issue"
+    implemented: true
+    working: false
+    file: "/app/backend/services/stock_service.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "🔍 ELIT STOCK SYMBOL DEBUGGING COMPLETE - ROOT CAUSE IDENTIFIED: Comprehensive investigation reveals the exact issue with ELIT stock symbol. ❌ CORE PROBLEM: ELIT is NOT in the Indonesian patterns list in stock_service.py, so it remains as 'ELIT' instead of being formatted to 'ELIT.JK'. Yahoo Finance has no data for 'ELIT' (US symbol) but DOES have data for 'ELIT.JK' (Indonesian stock - PT Data Sinergitama Jaya Tbk). ✅ SYSTEM WORKING CORRECTLY: No Alpha Vantage references found in error messages, all requests use Yahoo Finance exclusively (source='yahoo_finance'), error handling working properly with user-friendly messages. ✅ VERIFICATION RESULTS: ELIT without .JK fails with 'No data available for symbol ELIT', ELIT.JK works perfectly and returns valid Indonesian stock data (IDR currency, Jakarta Stock Exchange), backend logs show '$ELIT: possibly delisted; no price data found' confirming Yahoo Finance usage. ✅ COMPARISON WITH WORKING STOCKS: GOTO, BBCA, AAPL all work correctly because they're either in Indonesian patterns (GOTO→GOTO.JK, BBCA→BBCA.JK) or valid US symbols (AAPL). 🎯 SOLUTION NEEDED: Add 'ELIT' to the indonesian_patterns list in both stock_service.py and yahoo_finance_service.py so it gets automatically formatted to 'ELIT.JK'. The system is functioning correctly - it just needs ELIT added to the Indonesian stock patterns for proper symbol formatting."
+
 metadata:
   created_by: "testing_agent"
   version: "1.2"
