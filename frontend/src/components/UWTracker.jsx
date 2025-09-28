@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Search, FileText, TrendingUp, RefreshCw, Plus, AlertCircle, ChevronUp, ChevronDown, ArrowUpDown, ChevronLeft, ChevronRight, Target, BarChart3 } from 'lucide-react';
+import { Search, FileText, TrendingUp, RefreshCw, Plus, AlertCircle, ChevronUp, ChevronDown, ArrowUpDown, ChevronLeft, ChevronRight, Target, BarChart3, Brain, Activity, Smartphone } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Input } from './ui/input';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Alert, AlertDescription } from './ui/alert';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import {
   Table,
   TableBody,
@@ -14,7 +15,8 @@ import {
   TableHeader,
   TableRow,
 } from './ui/table';
-import { uwAPI, formatReturn, formatPrice, formatDate } from '../services/api';
+import { uwAPI, sentimentAPI, fundamentalAPI, analysisAPI, formatReturn, formatPrice, formatDate } from '../services/api';
+import MobileDashboard from './MobileDashboard';
 
 const UWTracker = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -35,6 +37,15 @@ const UWTracker = () => {
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(100);
+  const [showSentiment, setShowSentiment] = useState(false);
+  const [sentimentData, setSentimentData] = useState({});
+  const [loadingSentiment, setLoadingSentiment] = useState({});
+  const [showFundamental, setShowFundamental] = useState(false);
+  const [fundamentalData, setFundamentalData] = useState({});
+  const [loadingFundamental, setLoadingFundamental] = useState({});
+  const [showCombined, setShowCombined] = useState(false);
+  const [combinedData, setCombinedData] = useState({});
+  const [loadingCombined, setLoadingCombined] = useState({});
 
   // Debounced search function
   const debounce = useCallback((func, wait) => {
@@ -316,6 +327,287 @@ const UWTracker = () => {
       : <ChevronDown className="h-4 w-4 text-indigo-600" />;
   };
 
+  // Sentiment analysis functions
+  const fetchSentimentForStock = async (symbol) => {
+    try {
+      console.log(`Fetching sentiment for ${symbol}...`);
+      setLoadingSentiment(prev => ({ ...prev, [symbol]: true }));
+      const result = await sentimentAPI.getTechnicalSentiment(symbol, 30);
+      
+      console.log(`Sentiment result for ${symbol}:`, result);
+      
+      if (result.status === 'success') {
+        setSentimentData(prev => ({
+          ...prev,
+          [symbol]: result
+        }));
+        console.log(`Successfully stored sentiment for ${symbol}`);
+      } else {
+        console.log(`Failed sentiment analysis for ${symbol}:`, result);
+        setSentimentData(prev => ({
+          ...prev,
+          [symbol]: { 
+            error: result.message || 'Failed to analyze sentiment',
+            details: result
+          }
+        }));
+      }
+    } catch (error) {
+      console.error(`Error fetching sentiment for ${symbol}:`, error);
+      
+      // Handle different types of errors
+      let errorMessage = 'Network error';
+      if (error.response?.data?.detail) {
+        errorMessage = error.response.data.detail;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      setSentimentData(prev => ({
+        ...prev,
+        [symbol]: { 
+          error: errorMessage,
+          details: error.response?.data || error
+        }
+      }));
+    } finally {
+      setLoadingSentiment(prev => ({ ...prev, [symbol]: false }));
+    }
+  };
+
+  const getSentimentBadge = (symbol) => {
+    const sentiment = sentimentData[symbol];
+    console.log(`Getting sentiment badge for ${symbol}:`, sentiment);
+    
+    if (!sentiment) {
+      return <Badge variant="outline" className="text-xs">Not Analyzed</Badge>;
+    }
+    if (sentiment.error) {
+      // Show a more specific error message
+      const errorMsg = sentiment.error.includes('No data available') ? 'No Data' : 'Error';
+      return (
+        <Badge variant="destructive" className="text-xs" title={sentiment.error}>
+          {errorMsg}
+        </Badge>
+      );
+    }
+
+    const analysis = sentiment.sentiment_analysis;
+    const sentimentType = analysis.sentiment;
+    const confidence = analysis.confidence;
+
+    let variant = "outline";
+    let color = "text-gray-600";
+    let bgColor = "bg-gray-100";
+
+    if (sentimentType === 'bullish') {
+      variant = "default";
+      color = "text-green-700";
+      bgColor = "bg-green-100";
+    } else if (sentimentType === 'bearish') {
+      variant = "destructive";
+      color = "text-red-700";
+      bgColor = "bg-red-100";
+    }
+
+    return (
+      <Badge variant={variant} className={`text-xs ${color} ${bgColor}`}>
+        {sentimentType.charAt(0).toUpperCase() + sentimentType.slice(1)} 
+        ({(confidence * 100).toFixed(0)}%)
+      </Badge>
+    );
+  };
+
+  const getSentimentIcon = (symbol) => {
+    const sentiment = sentimentData[symbol];
+    if (!sentiment || sentiment.error) return null;
+
+    const analysis = sentiment.sentiment_analysis;
+    const sentimentType = analysis.sentiment;
+
+    if (sentimentType === 'bullish') {
+      return <TrendingUp className="h-4 w-4 text-green-600" />;
+    } else if (sentimentType === 'bearish') {
+      return <TrendingUp className="h-4 w-4 text-red-600 rotate-180" />;
+    }
+    return <Activity className="h-4 w-4 text-gray-600" />;
+  };
+
+  // Fundamental analysis functions
+  const fetchFundamentalForStock = async (symbol) => {
+    try {
+      console.log(`Fetching fundamental analysis for ${symbol}...`);
+      setLoadingFundamental(prev => ({ ...prev, [symbol]: true }));
+      const result = await fundamentalAPI.getFundamentalAnalysis(symbol, 30);
+      
+      console.log(`Fundamental result for ${symbol}:`, result);
+      
+      if (result.status === 'success') {
+        setFundamentalData(prev => ({
+          ...prev,
+          [symbol]: result
+        }));
+        console.log(`Successfully stored fundamental analysis for ${symbol}`);
+      } else {
+        console.log(`Failed fundamental analysis for ${symbol}:`, result);
+        setFundamentalData(prev => ({
+          ...prev,
+          [symbol]: { 
+            error: result.message || 'Failed to analyze fundamentals',
+            details: result
+          }
+        }));
+      }
+    } catch (error) {
+      console.error(`Error fetching fundamental analysis for ${symbol}:`, error);
+      
+      let errorMessage = 'Network error';
+      if (error.response?.data?.detail) {
+        errorMessage = error.response.data.detail;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      setFundamentalData(prev => ({
+        ...prev,
+        [symbol]: { 
+          error: errorMessage,
+          details: error.response?.data || error
+        }
+      }));
+    } finally {
+      setLoadingFundamental(prev => ({ ...prev, [symbol]: false }));
+    }
+  };
+
+  const getFundamentalBadge = (symbol) => {
+    const fundamental = fundamentalData[symbol];
+    console.log(`Getting fundamental badge for ${symbol}:`, fundamental);
+    
+    if (!fundamental) {
+      return <Badge variant="outline" className="text-xs">Not Analyzed</Badge>;
+    }
+    if (fundamental.error) {
+      const errorMsg = fundamental.error.includes('No data available') ? 'No Data' : 'Error';
+      return (
+        <Badge variant="destructive" className="text-xs" title={fundamental.error}>
+          {errorMsg}
+        </Badge>
+      );
+    }
+
+    const analysis = fundamental.fundamental_analysis;
+    const grade = analysis.grade;
+    const score = analysis.fundamental_score;
+
+    let variant = "outline";
+    let color = "text-gray-600";
+    let bgColor = "bg-gray-100";
+
+    if (grade === 'A' || grade === 'B') {
+      variant = "default";
+      color = "text-green-700";
+      bgColor = "bg-green-100";
+    } else if (grade === 'D' || grade === 'F') {
+      variant = "destructive";
+      color = "text-red-700";
+      bgColor = "bg-red-100";
+    }
+
+    return (
+      <Badge variant={variant} className={`text-xs ${color} ${bgColor}`}>
+        {grade} ({(score * 100).toFixed(0)}%)
+      </Badge>
+    );
+  };
+
+  // Combined analysis functions
+  const fetchCombinedForStock = async (symbol) => {
+    try {
+      console.log(`Fetching combined analysis for ${symbol}...`);
+      setLoadingCombined(prev => ({ ...prev, [symbol]: true }));
+      const result = await analysisAPI.getCombinedAnalysis(symbol, 30);
+      
+      console.log(`Combined result for ${symbol}:`, result);
+      
+      if (result.status === 'success') {
+        setCombinedData(prev => ({
+          ...prev,
+          [symbol]: result
+        }));
+        console.log(`Successfully stored combined analysis for ${symbol}`);
+      } else {
+        console.log(`Failed combined analysis for ${symbol}:`, result);
+        setCombinedData(prev => ({
+          ...prev,
+          [symbol]: { 
+            error: result.message || 'Failed to analyze',
+            details: result
+          }
+        }));
+      }
+    } catch (error) {
+      console.error(`Error fetching combined analysis for ${symbol}:`, error);
+      
+      let errorMessage = 'Network error';
+      if (error.response?.data?.detail) {
+        errorMessage = error.response.data.detail;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      setCombinedData(prev => ({
+        ...prev,
+        [symbol]: { 
+          error: errorMessage,
+          details: error.response?.data || error
+        }
+      }));
+    } finally {
+      setLoadingCombined(prev => ({ ...prev, [symbol]: false }));
+    }
+  };
+
+  const getCombinedBadge = (symbol) => {
+    const combined = combinedData[symbol];
+    console.log(`Getting combined badge for ${symbol}:`, combined);
+    
+    if (!combined) {
+      return <Badge variant="outline" className="text-xs">Not Analyzed</Badge>;
+    }
+    if (combined.error) {
+      const errorMsg = combined.error.includes('No data available') ? 'No Data' : 'Error';
+      return (
+        <Badge variant="destructive" className="text-xs" title={combined.error}>
+          {errorMsg}
+        </Badge>
+      );
+    }
+
+    const recommendation = combined.overall_recommendation;
+    const score = combined.combined_score;
+
+    let variant = "outline";
+    let color = "text-gray-600";
+    let bgColor = "bg-gray-100";
+
+    if (recommendation === 'Strong Buy' || recommendation === 'Buy') {
+      variant = "default";
+      color = "text-green-700";
+      bgColor = "bg-green-100";
+    } else if (recommendation === 'Sell' || recommendation === 'Strong Sell') {
+      variant = "destructive";
+      color = "text-red-700";
+      bgColor = "bg-red-100";
+    }
+
+    return (
+      <Badge variant={variant} className={`text-xs ${color} ${bgColor}`}>
+        {recommendation} ({(score * 100).toFixed(0)}%)
+      </Badge>
+    );
+  };
+
   // Debounced search handler
   const debouncedSearch = useMemo(
     () => debounce((searchValue) => fetchUWData(searchValue), 300),
@@ -386,6 +678,39 @@ const UWTracker = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Mobile-friendly tabs */}
+      <div className="md:hidden">
+        <Tabs defaultValue="mobile" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="mobile" className="flex items-center space-x-1">
+              <Smartphone className="h-4 w-4" />
+              <span>Mobile</span>
+            </TabsTrigger>
+            <TabsTrigger value="desktop" className="flex items-center space-x-1">
+              <BarChart3 className="h-4 w-4" />
+              <span>Desktop</span>
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="mobile" className="mt-0">
+            <MobileDashboard />
+          </TabsContent>
+          <TabsContent value="desktop" className="mt-0">
+            <DesktopView />
+          </TabsContent>
+        </Tabs>
+      </div>
+
+      {/* Desktop view */}
+      <div className="hidden md:block">
+        <DesktopView />
+      </div>
+    </div>
+  );
+
+  // Desktop view component
+  function DesktopView() {
+    return (
+      <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -409,6 +734,44 @@ const UWTracker = () => {
               >
                 <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
                 <span>Refresh</span>
+              </Button>
+              <Button 
+                size="sm" 
+                onClick={() => setShowSentiment(!showSentiment)}
+                variant={showSentiment ? "default" : "outline"}
+                className="flex items-center space-x-2"
+              >
+                <Brain className="h-4 w-4" />
+                <span>Sentiment</span>
+              </Button>
+              <Button 
+                size="sm" 
+                onClick={() => setShowFundamental(!showFundamental)}
+                variant={showFundamental ? "default" : "outline"}
+                className="flex items-center space-x-2"
+              >
+                <BarChart3 className="h-4 w-4" />
+                <span>Fundamental</span>
+              </Button>
+              <Button 
+                size="sm" 
+                onClick={() => setShowCombined(!showCombined)}
+                variant={showCombined ? "default" : "outline"}
+                className="flex items-center space-x-2"
+              >
+                <Target className="h-4 w-4" />
+                <span>Combined</span>
+              </Button>
+              <Button 
+                size="sm" 
+                onClick={() => {
+                  console.log('Current sentiment data:', sentimentData);
+                  console.log('Current loading state:', loadingSentiment);
+                }}
+                variant="outline"
+                className="flex items-center space-x-2"
+              >
+                <span>Debug</span>
               </Button>
               <span className="text-sm text-gray-600">Mode Tamu</span>
               <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700">
@@ -686,12 +1049,21 @@ const UWTracker = () => {
                         {getSortIcon('listingDate')}
                       </div>
                     </TableHead>
+                    {showSentiment && (
+                      <TableHead className="font-semibold text-gray-900">Sentiment</TableHead>
+                    )}
+                    {showFundamental && (
+                      <TableHead className="font-semibold text-gray-900">Fundamental</TableHead>
+                    )}
+                    {showCombined && (
+                      <TableHead className="font-semibold text-gray-900">Combined</TableHead>
+                    )}
                     <TableHead className="font-semibold text-gray-900">Record</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {paginatedData.map((item) => (
-                    <TableRow key={item._id} className="hover:bg-gray-50">
+                    <TableRow key={item.id || item._id} className="hover:bg-gray-50">
                       <TableCell className="font-medium text-indigo-600">
                         {Array.isArray(item.underwriters) ? (
                           <div className="flex flex-wrap gap-1">
@@ -744,6 +1116,67 @@ const UWTracker = () => {
                       <TableCell className="text-sm text-gray-600">
                         {formatDate(item.listingDate)}
                       </TableCell>
+                      {showSentiment && (
+                        <TableCell className="text-center">
+                          <div className="flex flex-col items-center space-y-1">
+                            {getSentimentIcon(item.code)}
+                            {getSentimentBadge(item.code)}
+                            {!sentimentData[item.code] && !loadingSentiment[item.code] && (
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => fetchSentimentForStock(item.code)}
+                                className="text-xs h-6 px-2"
+                              >
+                                Analyze
+                              </Button>
+                            )}
+                            {loadingSentiment[item.code] && (
+                              <div className="text-xs text-gray-500">Loading...</div>
+                            )}
+                          </div>
+                        </TableCell>
+                      )}
+                      {showFundamental && (
+                        <TableCell className="text-center">
+                          <div className="flex flex-col items-center space-y-1">
+                            {getFundamentalBadge(item.code)}
+                            {!fundamentalData[item.code] && !loadingFundamental[item.code] && (
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => fetchFundamentalForStock(item.code)}
+                                className="text-xs h-6 px-2"
+                              >
+                                Analyze
+                              </Button>
+                            )}
+                            {loadingFundamental[item.code] && (
+                              <div className="text-xs text-gray-500">Loading...</div>
+                            )}
+                          </div>
+                        </TableCell>
+                      )}
+                      {showCombined && (
+                        <TableCell className="text-center">
+                          <div className="flex flex-col items-center space-y-1">
+                            {getCombinedBadge(item.code)}
+                            {!combinedData[item.code] && !loadingCombined[item.code] && (
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => fetchCombinedForStock(item.code)}
+                                className="text-xs h-6 px-2"
+                              >
+                                Analyze
+                              </Button>
+                            )}
+                            {loadingCombined[item.code] && (
+                              <div className="text-xs text-gray-500">Loading...</div>
+                            )}
+                          </div>
+                        </TableCell>
+                      )}
                       <TableCell>
                         <Badge variant="outline" className="font-medium">
                           {item.record || '-'}
@@ -768,7 +1201,8 @@ const UWTracker = () => {
         )}
       </main>
     </div>
-  );
+    );
+  }
 };
 
 export default UWTracker;

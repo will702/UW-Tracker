@@ -1,7 +1,30 @@
 import axios from 'axios';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+// Backend URL configuration
+const getBackendURL = () => {
+  // 1. Check environment variable first
+  if (process.env.REACT_APP_BACKEND_URL) {
+    return process.env.REACT_APP_BACKEND_URL;
+  }
+  
+  // 2. Check if we're in production (Vercel)
+  if (window.location.hostname.includes('vercel.app')) {
+    // Railway backend URL
+    return 'https://fixed-uw-tracker-production.up.railway.app';
+  }
+  
+  // 3. Local development fallback
+  return window.location.origin.replace(/:\\d+$/, ':8000');
+};
+
+const BACKEND_URL = getBackendURL();
 const API = `${BACKEND_URL}/api`;
+
+// Debug logging
+console.log('🔧 Backend URL:', BACKEND_URL);
+console.log('🔧 API Base URL:', API);
+console.log('🔧 Environment:', process.env.NODE_ENV);
+console.log('🔧 Hostname:', window.location.hostname);
 
 // Create axios instance with default config
 const apiClient = axios.create({
@@ -41,7 +64,7 @@ export const uwAPI = {
   // Get all UW records with optional search and pagination
   getAllRecords: async (search = '', limit = 100, offset = 0) => {
     try {
-      const params = { limit };
+      const params = { limit, offset };
       if (search) params.search = search;
       
       // Temporarily use simple endpoint
@@ -109,6 +132,93 @@ export const uwAPI = {
       return response.data;
     } catch (error) {
       throw new Error(`Failed to fetch UW record: ${error.message}`);
+    }
+  }
+};
+
+// Sentiment Analysis API functions
+export const sentimentAPI = {
+  // Get technical sentiment analysis for a stock
+  getTechnicalSentiment: async (symbol, daysBack = 30) => {
+    try {
+      const response = await apiClient.get(`/sentiment/technical/${symbol}`, {
+        params: { days_back: daysBack }
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(`Failed to fetch technical sentiment: ${error.message}`);
+    }
+  },
+
+  // Get comprehensive sentiment analysis for a stock
+  getComprehensiveSentiment: async (symbol, daysBack = 30) => {
+    try {
+      const response = await apiClient.get(`/sentiment/comprehensive/${symbol}`, {
+        params: { days_back: daysBack }
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(`Failed to fetch comprehensive sentiment: ${error.message}`);
+    }
+  },
+
+  // Get batch sentiment analysis for multiple stocks
+  getBatchSentiment: async (symbols, daysBack = 30) => {
+    try {
+      const response = await apiClient.get('/sentiment/batch', {
+        params: { 
+          symbols: symbols, // Pass as array, not joined string
+          days_back: daysBack 
+        }
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(`Failed to fetch batch sentiment: ${error.message}`);
+    }
+  }
+};
+
+// Fundamental Analysis API functions
+export const fundamentalAPI = {
+  // Get fundamental analysis for a stock
+  getFundamentalAnalysis: async (symbol, daysBack = 30) => {
+    try {
+      const response = await apiClient.get(`/fundamental/${symbol}`, {
+        params: { days_back: daysBack }
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(`Failed to fetch fundamental analysis: ${error.message}`);
+    }
+  },
+
+  // Get batch fundamental analysis for multiple stocks
+  getBatchFundamental: async (symbols, daysBack = 30) => {
+    try {
+      const response = await apiClient.get('/fundamental/batch', {
+        params: { 
+          symbols: symbols,
+          days_back: daysBack 
+        }
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(`Failed to fetch batch fundamental analysis: ${error.message}`);
+    }
+  }
+};
+
+// Combined Analysis API functions
+export const analysisAPI = {
+  // Get combined technical sentiment and fundamental analysis
+  getCombinedAnalysis: async (symbol, daysBack = 30) => {
+    try {
+      const response = await apiClient.get(`/analysis/combined/${symbol}`, {
+        params: { days_back: daysBack }
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(`Failed to fetch combined analysis: ${error.message}`);
     }
   }
 };
