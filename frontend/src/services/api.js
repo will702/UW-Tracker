@@ -9,7 +9,7 @@ const getBackendURL = () => {
   
   // 2. Check if we're in production (Vercel)
   if (window.location.hostname.includes('vercel.app')) {
-    // Railway backend URL
+    // Railway backend URL - your actual Railway URL
     return 'https://fixed-uw-tracker-production.up.railway.app';
   }
   
@@ -67,7 +67,7 @@ export const uwAPI = {
       const params = { limit, offset };
       if (search) params.search = search;
       
-      // Temporarily use simple endpoint
+      // Use the correct endpoint from the deployed backend
       const response = await apiClient.get('/uw-data/simple', { params });
       return response.data;
     } catch (error) {
