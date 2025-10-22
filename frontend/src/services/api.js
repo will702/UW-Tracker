@@ -7,10 +7,9 @@ const getBackendURL = () => {
     return process.env.REACT_APP_BACKEND_URL;
   }
   
-  // 2. Check if we're in production (Vercel)
+  // 2. Check if we're in production (Vercel) - use same domain for serverless API
   if (window.location.hostname.includes('vercel.app')) {
-    // Railway backend URL - your actual Railway URL
-    return 'https://fixed-uw-tracker-production.up.railway.app';
+    return window.location.origin;
   }
   
   // 3. Local development fallback
