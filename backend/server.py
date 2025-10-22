@@ -7,6 +7,9 @@ import random
 from datetime import datetime
 import json
 import os
+from motor.motor_asyncio import AsyncIOMotorClient
+from routers import uw_router
+from services.uw_service import UWService
 
 # Create the main app
 app = FastAPI(
@@ -22,9 +25,11 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:3000", 
         "http://127.0.0.1:3000",
+        "https://uw-tracker.vercel.app",
         "https://uw-tracker-590qzp40v-gregorius-willsons-projects.vercel.app",
-        "https://*.vercel.app"  # Allow all Vercel subdomains
+        "https://uw-tracker-git-main-gregorius-willsons-projects.vercel.app",
     ],
+    allow_origin_regex=r"https://.*\.vercel\.app",  # Allow all Vercel preview URLs
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -39,10 +44,57 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# MongoDB configuration
+MONGODB_URL = os.getenv("MONGODB_URL", "mongodb://localhost:27017")
+DATABASE_NAME = os.getenv("DATABASE_NAME", "uw_tracker")
+
+# Global database client
+db_client = None
+db = None
+
+# Startup and shutdown events
+@app.on_event("startup")
+async def startup_db_client():
+    global db_client, db
+    try:
+        logger.info(f"Connecting to MongoDB: {MONGODB_URL}")
+        db_client = AsyncIOMotorClient(MONGODB_URL)
+        db = db_client[DATABASE_NAME]
+        
+        # Test connection
+        await db_client.admin.command('ping')
+        logger.info("Successfully connected to MongoDB")
+        
+        # Initialize UW service
+        uw_service = UWService(db)
+        uw_router.set_uw_service(uw_service)
+        
+        # Include routers
+        app.include_router(uw_router.router, prefix="/api")
+        
+        logger.info("UW Router mounted successfully")
+        
+    except Exception as e:
+        logger.error(f"Failed to connect to MongoDB: {e}")
+        logger.warning("Starting with mock data endpoints only")
+
+@app.on_event("shutdown")
+async def shutdown_db_client():
+    global db_client
+    if db_client:
+        db_client.close()
+        logger.info("MongoDB connection closed")
+
 # Health and info endpoints
 @app.get("/api/healthz")
 async def healthz():
-    return {"status": "ok"}
+    try:
+        if db_client:
+            await db_client.admin.command('ping')
+            return {"status": "ok", "database": "connected"}
+        return {"status": "ok", "database": "disconnected"}
+    except Exception as e:
+        return {"status": "degraded", "database": "error", "error": str(e)}
 
 @app.get("/api/info")
 async def info():
