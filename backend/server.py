@@ -8,8 +8,9 @@ from datetime import datetime
 import json
 import os
 from motor.motor_asyncio import AsyncIOMotorClient
-from routers import uw_router
+from routers import uw_router, uw_router_grouped
 from services.uw_service import UWService
+from services.uw_service_grouped import UWServiceGrouped
 
 # Create the main app
 app = FastAPI(
@@ -52,6 +53,10 @@ DATABASE_NAME = os.getenv("DATABASE_NAME", "uw_tracker")
 db_client = None
 db = None
 
+# Always include routers (even if MongoDB fails, endpoints will handle errors gracefully)
+app.include_router(uw_router.router, prefix="/api")
+app.include_router(uw_router_grouped.router, prefix="/api/uw-data-grouped")
+
 # Startup and shutdown events
 @app.on_event("startup")
 async def startup_db_client():
@@ -69,14 +74,16 @@ async def startup_db_client():
         uw_service = UWService(db)
         uw_router.set_uw_service(uw_service)
         
-        # Include routers
-        app.include_router(uw_router.router, prefix="/api")
+        # Initialize grouped UW service
+        uw_service_grouped = UWServiceGrouped(db)
+        uw_router_grouped.set_uw_service(uw_service_grouped)
         
         logger.info("UW Router mounted successfully")
+        logger.info("UW Grouped Router mounted successfully")
         
     except Exception as e:
         logger.error(f"Failed to connect to MongoDB: {e}")
-        logger.warning("Starting with mock data endpoints only")
+        logger.warning("Starting with degraded mode - database operations will fail gracefully")
 
 @app.on_event("shutdown")
 async def shutdown_db_client():

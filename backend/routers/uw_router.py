@@ -28,12 +28,21 @@ router = APIRouter(prefix="/uw-data", tags=["UW Records"])
 
 @router.get("/simple")
 async def get_simple_records(
-    limit: int = Query(10, ge=1, le=100),
-    search: Optional[str] = Query(None, description="Search term"),
-    service: UWService = Depends(get_uw_service)
+    limit: int = Query(10, ge=1, le=10000),
+    search: Optional[str] = Query(None, description="Search term")
 ):
     """Get simple records without Pydantic validation"""
     try:
+        # Check if service is available
+        if _uw_service is None:
+            logger.warning("UW service not initialized - returning empty results")
+            return {
+                "data": [],
+                "count": 0,
+                "total": 0,
+                "message": "Database not connected. Please start MongoDB."
+            }
+        
         # Build query
         query = {}
         if search:
@@ -45,7 +54,7 @@ async def get_simple_records(
                 ]
             }
         
-        records = await service.collection.find(query).sort("listingDate", -1).limit(limit).to_list(length=limit)
+        records = await _uw_service.collection.find(query).sort("listingDate", -1).limit(limit).to_list(length=limit)
         result = []
         for record in records:
             record["_id"] = str(record["_id"])
@@ -58,7 +67,7 @@ async def get_simple_records(
                 record["updatedAt"] = record["updatedAt"].isoformat()
             result.append(record)
         
-        total = await service.collection.count_documents(query)
+        total = await _uw_service.collection.count_documents(query)
         
         return {
             "data": result,
@@ -138,25 +147,33 @@ async def get_direct_count(
         return {"error": str(e)}
 
 @router.get("/stats")
-async def get_uw_stats_simple(
-    service: UWService = Depends(get_uw_service)
-):
+async def get_uw_stats_simple():
     """Get UW records statistics using simple approach"""
     try:
-        total_records = await service.collection.count_documents({})
+        # Check if service is available
+        if _uw_service is None:
+            logger.warning("UW service not initialized - returning empty stats")
+            return {
+                "totalRecords": 0,
+                "totalUW": 0,
+                "totalCompanies": 0,
+                "lastUpdated": None
+            }
+        
+        total_records = await _uw_service.collection.count_documents({})
         
         # Get unique UW count
         uw_pipeline = [{"$group": {"_id": "$uw"}}]
-        uw_result = await service.collection.aggregate(uw_pipeline).to_list(None)
+        uw_result = await _uw_service.collection.aggregate(uw_pipeline).to_list(None)
         total_uw = len(uw_result)
 
         # Get unique companies count
         company_pipeline = [{"$group": {"_id": "$companyName"}}]
-        company_result = await service.collection.aggregate(company_pipeline).to_list(None)
+        company_result = await _uw_service.collection.aggregate(company_pipeline).to_list(None)
         total_companies = len(company_result)
 
         # Get last updated
-        last_record = await service.collection.find_one(
+        last_record = await _uw_service.collection.find_one(
             {}, 
             sort=[("updatedAt", -1)]
         )

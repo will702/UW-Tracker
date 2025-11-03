@@ -24,22 +24,159 @@ def set_uw_service(service: UWServiceGrouped):
     global _uw_service  
     _uw_service = service
 
-router = APIRouter(prefix="/uw-data", tags=["UW Records (Grouped)"])
+router = APIRouter(prefix="", tags=["UW Records (Grouped)"])
+
+@router.get("/grouped")
+async def get_grouped_records(
+    limit: int = Query(10, ge=1, le=10000),
+    search: Optional[str] = Query(None, description="Search term")
+):
+    """Get records grouped by stock code with all underwriters aggregated"""
+    try:
+        # Check if service is available
+        if _uw_service is None:
+            logger.warning("UW grouped service not initialized - returning empty results")
+            return {
+                "data": [],
+                "count": 0,
+                "total": 0,
+                "message": "Database not connected. Please start MongoDB."
+            }
+        
+        # Build aggregation pipeline
+        # IMPORTANT: Group first to collect ALL underwriters, then filter after grouping
+        # This ensures when searching for "LG", we still show all underwriters for stocks that have LG
+        
+        # Step 1: Group by stock code and aggregate ALL underwriters
+        pipeline = [
+            {
+                "$group": {
+                    "_id": "$code",
+                    "underwriters": {
+                        "$addToSet": {
+                            "$cond": [
+                                {"$ne": ["$uw", None]},
+                                "$uw",
+                                {"$arrayElemAt": ["$underwriters", 0]}
+                            ]
+                        }
+                    },
+                    # Take first non-null value for other fields
+                    "code": {"$first": "$code"},
+                    "companyName": {"$first": "$companyName"},
+                    "ipoPrice": {"$first": "$ipoPrice"},
+                    "returnD1": {"$first": "$returnD1"},
+                    "returnD2": {"$first": "$returnD2"},
+                    "returnD3": {"$first": "$returnD3"},
+                    "returnD4": {"$first": "$returnD4"},
+                    "returnD5": {"$first": "$returnD5"},
+                    "returnD6": {"$first": "$returnD6"},
+                    "returnD7": {"$first": "$returnD7"},
+                    "listingBoard": {"$first": "$listingBoard"},
+                    "listingDate": {"$first": "$listingDate"},
+                    "record": {"$first": "$record"},
+                    "createdAt": {"$first": "$createdAt"},
+                    "updatedAt": {"$max": "$updatedAt"}  # Most recent update
+                }
+            }
+        ]
+        
+        # Step 2: Filter AFTER grouping (so we keep all underwriters but only show stocks that match search)
+        if search:
+            search_upper = search.upper()
+            pipeline.append({
+                "$match": {
+                    "underwriters": {"$in": [search_upper]}
+                }
+            })
+        
+        # Step 3: Sort and limit
+        pipeline.extend([
+            {
+                "$sort": {"listingDate": -1}
+            },
+            {
+                "$limit": limit
+            }
+        ])
+        
+        # Execute aggregation
+        grouped_records = await _uw_service.collection.aggregate(pipeline).to_list(length=None)
+        
+        # Get total count of unique stock codes
+        count_pipeline = pipeline[:-1]  # Remove $limit
+        count_pipeline.append({"$count": "total"})
+        count_result = await _uw_service.collection.aggregate(count_pipeline).to_list(length=1)
+        total = count_result[0]["total"] if count_result else 0
+        
+        # Format results
+        result = []
+        for record in grouped_records:
+            # Convert ObjectId to string
+            record["_id"] = str(record.get("_id", record.get("code", "")))
+            
+            # Ensure underwriters is a list and remove duplicates
+            if "underwriters" in record:
+                record["underwriters"] = [uw for uw in record["underwriters"] if uw is not None]
+                record["underwriters"] = sorted(list(set(record["underwriters"])))
+            
+            # Convert datetime to string for JSON serialization
+            if "listingDate" in record:
+                if record["listingDate"] is None:
+                    record["listingDate"] = None  # Keep as None if null
+                elif hasattr(record["listingDate"], 'isoformat'):
+                    record["listingDate"] = record["listingDate"].isoformat()
+                # If already a string, keep it as is
+            if "createdAt" in record and record["createdAt"] is not None:
+                if hasattr(record["createdAt"], 'isoformat'):
+                    record["createdAt"] = record["createdAt"].isoformat()
+            if "updatedAt" in record and record["updatedAt"] is not None:
+                if hasattr(record["updatedAt"], 'isoformat'):
+                    record["updatedAt"] = record["updatedAt"].isoformat()
+            
+            result.append(record)
+        
+        return {
+            "data": result,
+            "count": len(result),
+            "total": total
+        }
+    except Exception as e:
+        logger.error(f"Error in grouped endpoint: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
+        return {"error": str(e), "data": [], "count": 0, "total": 0}
 
 @router.get("/simple")
 async def get_simple_records(
-    limit: int = Query(10, ge=1, le=1000),
-    search: Optional[str] = Query(None, description="Search term"),
-    service: UWServiceGrouped = Depends(get_uw_service)
+    limit: int = Query(10, ge=1, le=10000),
+    search: Optional[str] = Query(None, description="Search term")
 ):
     """Get simple records without full Pydantic validation"""
     try:
+        # Check if service is available
+        if _uw_service is None:
+            logger.warning("UW grouped service not initialized - returning empty results")
+            return {
+                "data": [],
+                "count": 0,
+                "total": 0,
+                "message": "Database not connected. Please start MongoDB."
+            }
+        
         # Build query
         query = {}
         if search:
-            query = {"underwriters": {"$in": [search.upper()]}}  # Search only in UW array
+            search_upper = search.upper()
+            # Search in both 'underwriters' array and 'uw' string field (for backward compatibility)
+            query = {
+                "$or": [
+                    {"underwriters": {"$in": [search_upper]}},
+                    {"uw": {"$regex": search_upper, "$options": "i"}}
+                ]
+            }
         
-        records = await service.collection.find(query).sort("listingDate", -1).limit(limit).to_list(length=None)
+        records = await _uw_service.collection.find(query).sort("listingDate", -1).limit(limit).to_list(length=None)
         result = []
         for record in records:
             record["_id"] = str(record["_id"])
@@ -52,7 +189,7 @@ async def get_simple_records(
                 record["updatedAt"] = record["updatedAt"].isoformat()
             result.append(record)
         
-        total = await service.collection.count_documents(query)
+        total = await _uw_service.collection.count_documents(query)
         
         return {
             "data": result,
@@ -113,35 +250,64 @@ async def get_direct_count(
         return {"error": str(e)}
 
 @router.get("/stats")
-async def get_uw_stats_simple(
-    service: UWServiceGrouped = Depends(get_uw_service)
-):
-    """Get UW records statistics using simple approach"""
+async def get_uw_stats_simple():
+    """Get UW records statistics - counts unique stock codes (grouped), not individual records"""
     try:
-        total_records = await service.collection.count_documents({})
+        # Check if service is available
+        if _uw_service is None:
+            logger.warning("UW grouped service not initialized - returning empty stats")
+            return {
+                "totalRecords": 0,
+                "totalUW": 0,
+                "totalCompanies": 0,
+                "lastUpdated": None
+            }
         
-        # Get unique UW count (flatten underwriters arrays)
-        uw_pipeline = [
-            {"$unwind": "$underwriters"},
-            {"$group": {"_id": "$underwriters"}}
+        # Get unique stock codes count (grouped by code)
+        # This represents the actual number of unique IPOs, not individual records
+        unique_stocks_pipeline = [
+            {"$group": {"_id": "$code"}},
+            {"$count": "total"}
         ]
-        uw_result = await service.collection.aggregate(uw_pipeline).to_list(None)
-        total_uw = len(uw_result)
+        stocks_result = await _uw_service.collection.aggregate(unique_stocks_pipeline).to_list(length=1)
+        total_stocks = stocks_result[0]["total"] if stocks_result else 0
+        
+        # Get unique UW count - collect all underwriters from all records, then get unique count
+        uw_pipeline = [
+            {
+                "$group": {
+                    "_id": "$code",
+                    "underwriters": {
+                        "$addToSet": {
+                            "$cond": [
+                                {"$ne": ["$uw", None]},
+                                "$uw",
+                                {"$arrayElemAt": ["$underwriters", 0]}
+                            ]
+                        }
+                    }
+                }
+            },
+            {"$unwind": "$underwriters"},
+            {"$group": {"_id": "$underwriters"}},
+            {"$count": "total"}
+        ]
+        uw_result = await _uw_service.collection.aggregate(uw_pipeline).to_list(length=1)
+        total_uw = uw_result[0]["total"] if uw_result else 0
 
-        # Get unique companies count
-        company_pipeline = [{"$group": {"_id": "$companyName"}}]
-        company_result = await service.collection.aggregate(company_pipeline).to_list(None)
-        total_companies = len(company_result)
+        # Get unique companies count (based on unique stock codes grouped)
+        # Since we're grouping by code, each code represents one company/IPO
+        total_companies = total_stocks  # Same as total stocks since each code = one IPO
 
         # Get last updated
-        last_record = await service.collection.find_one(
+        last_record = await _uw_service.collection.find_one(
             {}, 
             sort=[("updatedAt", -1)]
         )
         last_updated = last_record.get("updatedAt").isoformat() if last_record and last_record.get("updatedAt") else None
 
         return {
-            "totalRecords": total_records,
+            "totalRecords": total_stocks,  # Unique stock codes (grouped)
             "totalUW": total_uw,
             "totalCompanies": total_companies,
             "lastUpdated": last_updated
@@ -149,6 +315,8 @@ async def get_uw_stats_simple(
 
     except Exception as e:
         logger.error(f"Error getting simple stats: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
         return {
             "totalRecords": 0,
             "totalUW": 0,
