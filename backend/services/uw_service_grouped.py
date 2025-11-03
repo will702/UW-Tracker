@@ -175,20 +175,46 @@ class UWServiceGrouped:
     async def get_stats(self) -> UWStatsGroupedResponse:
         """Get statistics about UW records"""
         try:
-            total_records = await self.collection.count_documents({})
+            # Get unique stock codes (for grouped view, this is what we count)
+            code_pipeline = [{"$group": {"_id": "$code"}}]
+            code_result = await self.collection.aggregate(code_pipeline).to_list(None)
+            total_records = len(code_result)
             
             # Get unique UW count (flatten all underwriters arrays)
+            # Handle both old format ($uw as string) and new format (underwriters as array)
             uw_pipeline = [
-                {"$unwind": "$underwriters"},
-                {"$group": {"_id": "$underwriters"}}
+                {
+                    "$addFields": {
+                        "uw_array": {
+                            "$cond": [
+                                {"$isArray": "$underwriters"},
+                                "$underwriters",
+                                {
+                                    "$cond": [
+                                        {"$ne": ["$uw", None]},
+                                        [{"$toUpper": {"$toString": "$uw"}}],
+                                        []
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                },
+                {"$unwind": {"path": "$uw_array", "preserveNullAndEmptyArrays": True}},
+                {"$match": {"uw_array": {"$ne": None}}},
+                {"$group": {"_id": "$uw_array"}}
             ]
             uw_result = await self.collection.aggregate(uw_pipeline).to_list(None)
             total_uw = len(uw_result)
 
-            # Get unique companies count
-            company_pipeline = [{"$group": {"_id": "$companyName"}}]
+            # Get unique companies count (count unique stock codes, not company names)
+            company_pipeline = [{"$group": {"_id": "$code"}}]
             company_result = await self.collection.aggregate(company_pipeline).to_list(None)
             total_companies = len(company_result)
+            
+            # Also count unique stock codes for totalRecords (grouped view)
+            # This should match total_companies since we're grouping by code
+            total_records = total_companies
 
             # Get last updated
             last_record = await self.collection.find_one(

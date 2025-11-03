@@ -48,16 +48,40 @@ async def get_grouped_records(
         # This ensures when searching for "LG", we still show all underwriters for stocks that have LG
         
         # Step 1: Group by stock code and aggregate ALL underwriters
+        # First unwind underwriters array if it exists, or create array from uw field
         pipeline = [
+            {
+                "$addFields": {
+                    "uw_array": {
+                        "$cond": [
+                            {"$isArray": "$underwriters"},
+                            "$underwriters",
+                            {
+                                "$cond": [
+                                    {"$ne": ["$uw", None]},
+                                    ["$uw"],
+                                    []
+                                ]
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "$unwind": {
+                    "path": "$uw_array",
+                    "preserveNullAndEmptyArrays": True
+                }
+            },
             {
                 "$group": {
                     "_id": "$code",
                     "underwriters": {
                         "$addToSet": {
                             "$cond": [
-                                {"$ne": ["$uw", None]},
-                                "$uw",
-                                {"$arrayElemAt": ["$underwriters", 0]}
+                                {"$ne": ["$uw_array", None]},
+                                {"$toUpper": {"$toString": "$uw_array"}},
+                                "$$REMOVE"
                             ]
                         }
                     },
