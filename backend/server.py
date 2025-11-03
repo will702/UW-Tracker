@@ -92,8 +92,20 @@ async def shutdown_db_client():
         db_client.close()
         logger.info("MongoDB connection closed")
 
+# Root endpoint
+@app.get("/")
+async def root():
+    return {
+        "message": "UW Tracker API",
+        "version": "1.0.0",
+        "docs": "/docs",
+        "health": "/api/healthz",
+        "info": "/api/info"
+    }
+
 # Health and info endpoints
 @app.get("/api/healthz")
+@app.get("/healthz")
 async def healthz():
     try:
         if db_client:
