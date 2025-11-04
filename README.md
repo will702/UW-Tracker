@@ -119,14 +119,17 @@ See [API Documentation](./docs/API.md) for complete details.
 
 The application can be deployed to:
 - **Frontend**: Vercel (recommended) or Netlify
-- **Backend**: Render (recommended) or Railway
+- **Backend**: Railway (recommended - no spin-down) or Fly.io or Render
 - **Database**: MongoDB Atlas (required for production)
 
-**Quick Deploy**: See [DEPLOYMENT_QUICKSTART.md](./DEPLOYMENT_QUICKSTART.md) for 5-minute deployment guide.
+**Quick Deploy**: 
+- Railway: See [QUICK_DEPLOY_RAILWAY.md](./docs/QUICK_DEPLOY_RAILWAY.md) for 5-minute setup
+- Alternatives: See [DEPLOYMENT_ALTERNATIVES.md](./docs/DEPLOYMENT_ALTERNATIVES.md) for free hosting options
 
-**Detailed Guide**: See [Deployment Guide](./docs/DEPLOYMENT.md) for step-by-step instructions.
-
-**Render Specific**: See [Render Deployment Guide](./docs/DEPLOYMENT_RENDER.md) for detailed Render setup.
+**Detailed Guides**: 
+- [Railway Deployment](./docs/DEPLOYMENT_RAILWAY.md) - Recommended (no spin-down)
+- [Fly.io Deployment](./docs/DEPLOYMENT_FLYIO.md) - Alternative free hosting
+- [Render Deployment](./docs/DEPLOYMENT_RENDER.md) - Original setup (spins down on free tier)
 
 ## 📝 License
 

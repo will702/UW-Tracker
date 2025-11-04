@@ -30,7 +30,7 @@ app.add_middleware(
         "https://uw-tracker-590qzp40v-gregorius-willsons-projects.vercel.app",
         "https://uw-tracker-git-main-gregorius-willsons-projects.vercel.app",
     ],
-    allow_origin_regex=r"https://.*\.vercel\.app",  # Allow all Vercel preview URLs
+    allow_origin_regex=r"https://.*\.(vercel\.app|railway\.app|fly\.dev|herokuapp\.com)",  # Allow all Vercel, Railway, Fly.io, and Heroku URLs
     allow_methods=["*"],
     allow_headers=["*"],
 )
