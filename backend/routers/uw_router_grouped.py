@@ -29,7 +29,8 @@ router = APIRouter(prefix="", tags=["UW Records (Grouped)"])
 @router.get("/grouped")
 async def get_grouped_records(
     limit: int = Query(10, ge=1, le=10000),
-    search: Optional[str] = Query(None, description="Search term")
+    search: Optional[str] = Query(None, description="Search term"),
+    search_type: Optional[str] = Query("underwriter", description="Search type: 'stock' for stock code/symbol, 'underwriter' for underwriter code")
 ):
     """Get records grouped by stock code with all underwriters aggregated"""
     try:
@@ -105,14 +106,44 @@ async def get_grouped_records(
             }
         ]
         
-        # Step 2: Filter AFTER grouping (so we keep all underwriters but only show stocks that match search)
+        # Step 2: Filter AFTER grouping based on search type
         if search:
-            search_upper = search.upper()
-            pipeline.append({
-                "$match": {
-                    "underwriters": {"$in": [search_upper]}
-                }
-            })
+            search_upper = search.upper().strip()
+            if search_type == "stock":
+                # Search by stock code (exact match or partial match)
+                pipeline.append({
+                    "$match": {
+                        "$or": [
+                            {"code": {"$regex": search_upper, "$options": "i"}},
+                            {"companyName": {"$regex": search_upper, "$options": "i"}}
+                        ]
+                    }
+                })
+            else:  # Default to underwriter search
+                # Search by underwriter code (partial match supported)
+                # Filter underwriters array to find any that match the search pattern
+                pipeline.append({
+                    "$addFields": {
+                        "matched_underwriters": {
+                            "$filter": {
+                                "input": "$underwriters",
+                                "as": "uw",
+                                "cond": {
+                                    "$regexMatch": {
+                                        "input": "$$uw",
+                                        "regex": search_upper,
+                                        "options": "i"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                })
+                pipeline.append({
+                    "$match": {
+                        "matched_underwriters": {"$ne": []}
+                    }
+                })
         
         # Step 3: Sort and limit
         pipeline.extend([
@@ -272,6 +303,80 @@ async def get_direct_count(
         }
     except Exception as e:
         return {"error": str(e)}
+
+@router.get("/underwriters")
+async def get_all_underwriters():
+    """Get all unique underwriters with their statistics"""
+    try:
+        # Check if service is available
+        if _uw_service is None:
+            logger.warning("UW grouped service not initialized - returning empty results")
+            return {
+                "data": [],
+                "total": 0
+            }
+        
+        # Pipeline to get all unique underwriters with their IPO counts
+        pipeline = [
+            # First, handle both old format (uw) and new format (underwriters array)
+            {
+                "$addFields": {
+                    "uw_array": {
+                        "$cond": [
+                            {"$isArray": "$underwriters"},
+                            "$underwriters",
+                            {
+                                "$cond": [
+                                    {"$ne": ["$uw", None]},
+                                    [{"$toUpper": {"$toString": "$uw"}}],
+                                    []
+                                ]
+                            }
+                        ]
+                    }
+                }
+            },
+            # Unwind to get individual underwriters
+            {
+                "$unwind": {
+                    "path": "$uw_array",
+                    "preserveNullAndEmptyArrays": False
+                }
+            },
+            # Group by underwriter and count IPOs
+            {
+                "$group": {
+                    "_id": "$uw_array",
+                    "ipoCount": {"$sum": 1},
+                    "codes": {"$addToSet": "$code"}
+                }
+            },
+            # Sort by IPO count descending
+            {
+                "$sort": {"ipoCount": -1}
+            },
+            # Format output
+            {
+                "$project": {
+                    "_id": 0,
+                    "code": "$_id",
+                    "ipoCount": 1,
+                    "totalIPOs": "$ipoCount"
+                }
+            }
+        ]
+        
+        result = await _uw_service.collection.aggregate(pipeline).to_list(length=None)
+        
+        return {
+            "data": result,
+            "total": len(result)
+        }
+    except Exception as e:
+        logger.error(f"Error getting underwriters: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
+        return {"error": str(e), "data": [], "total": 0}
 
 @router.get("/stats")
 async def get_uw_stats_simple():
