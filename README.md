@@ -1,145 +1,50 @@
-# UW Tracker - Indonesian IPO Underwriter Performance Tracker
+# UW Tracker
 
-A full-stack web application for tracking and analyzing Indonesian IPO (Initial Public Offering) underwriter performance. This application provides insights into how different underwriters perform with their IPO listings across multiple days.
+Production-ready Expo (React Native + Web) application for tracking Indonesian IPO underwriter performance with Firebase as the primary data store.
 
-## 🚀 Features
-
-- **📊 Dashboard**: Overview statistics and system health monitoring
-- **📋 Records Management**: Browse, search, and view IPO records with full D+1 to D+7 return data
-- **🔥 Heatmap Visualization**: Underwriter performance heatmap showing average returns across all days
-- **🔍 Advanced Search**: Search by underwriter code with automatic grouping
-- **📥 Data Export**: Download records as JSON or CSV/Excel files
-- **🔐 Admin Dashboard**: Secure admin panel for adding/deleting records
-- **📈 Sorting & Filtering**: Sort records by any return column (D+1 through D+7)
-- **🎯 Smart Grouping**: Automatically groups stocks with multiple underwriters
-
-## 📁 Project Structure
+## Repository layout
 
 ```
-UW-Tracker-2/
-├── backend/                 # FastAPI backend
-│   ├── models/             # Pydantic data models
-│   ├── routers/            # API route handlers
-│   ├── services/           # Business logic layer
-│   ├── server.py           # Main FastAPI application
-│   └── requirements.txt    # Python dependencies
-├── frontend/               # React + TypeScript frontend
-│   ├── src/
-│   │   ├── components/    # Reusable React components
-│   │   ├── pages/         # Page components
-│   │   ├── services/      # API service layer
-│   │   ├── types/         # TypeScript type definitions
-│   │   └── utils/         # Utility functions
-│   ├── package.json       # Node.js dependencies
-│   └── vite.config.ts     # Vite configuration
-└── README.md              # This file
+UW-Tracker/
+├── react-native-expo/        # Main app (Expo + TypeScript + Firebase)
+└── README.md
 ```
 
-## 🛠️ Tech Stack
+All legacy FastAPI/Vite code, MongoDB scripts, and data dumps were removed to keep the repository focused on the production Expo build.
 
-### Backend
-- **FastAPI**: Modern Python web framework
-- **MongoDB**: NoSQL database with Motor (async driver)
-- **Pydantic**: Data validation
-- **Uvicorn**: ASGI server
+## Getting started (Expo app)
 
-### Frontend
-- **React 18**: UI library
-- **TypeScript**: Type safety
-- **Vite**: Build tool and dev server
-- **TailwindCSS**: Utility-first CSS framework
-- **React Router**: Client-side routing
+1. Install dependencies:
+   ```bash
+   cd react-native-expo
+   npm install
+   ```
+2. Set up your `.env` (see `react-native-expo/docs/FIREBASE_SETUP.md` for the required keys).
+3. Launch Metro:
+   ```bash
+   npm start
+   ```
+4. Choose `i` (iOS simulator), `a` (Android), or `w` (web) from the Expo CLI.
 
-## 📚 Documentation
+Full instructions live in `react-native-expo/docs/QUICK_START.md`.
 
-- [Setup Guide](./docs/SETUP.md) - Installation and local development setup
-- [API Documentation](./docs/API.md) - Complete API endpoint reference
-- [Deployment Guide](./docs/DEPLOYMENT.md) - How to deploy to production
-- [Frontend README](./frontend/README.md) - Frontend-specific documentation
+## Documentation
 
-## 🚀 Quick Start
+- `react-native-expo/DOCUMENTATION_SUMMARY.md` – master index of every active guide.
+- Key topics (all inside `react-native-expo/docs/`):
+  - Setup: `README.md`, `QUICK_START.md`
+  - Firebase data + envs: `FIREBASE_SETUP.md`, `FIREBASE_MIGRATION.md`
+  - Deployment: `WEB_DEPLOY_QUICK_START.md`, `DEPLOY_QUICK_START.md`
+  - Troubleshooting: `TROUBLESHOOTING.md`, `FIREBASE_DATA_TROUBLESHOOTING.md`
 
-### Prerequisites
-- Python 3.9+ 
-- Node.js 18+
-- MongoDB (local or cloud instance)
+## Production readiness
 
-### Backend Setup
+- Offline-capable Expo application with Firestore caching.
+- Direct database access from the client (no dedicated API server required).
+- EAS build profiles configured for iOS and Android.
+- Web export (`npm run build:web`) ready for static hosting (Vercel, Firebase Hosting, Netlify, etc.).
 
-```bash
-cd backend
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -r requirements.txt
-```
+## Legacy components
 
-### Frontend Setup
-
-```bash
-cd frontend
-npm install
-```
-
-### Running Locally
-
-**Terminal 1 - Backend:**
-```bash
-cd backend
-python -m uvicorn server:app --reload --host 0.0.0.0 --port 8000
-```
-
-**Terminal 2 - Frontend:**
-```bash
-cd frontend
-npm run dev
-```
-
-Visit `http://localhost:3000` to see the application.
-
-## 🔐 Admin Access
-
-- **URL**: `/admin`
-- **Username**: `admin`
-- **Password**: `admin123`
-
-⚠️ **Important**: Change these credentials in production!
-
-## 📊 API Endpoints
-
-- `GET /api/healthz` - Health check
-- `GET /api/info` - API information
-- `GET /api/uw-data-grouped/grouped` - Get grouped records
-- `GET /api/uw-data-grouped/stats` - Get statistics
-- `POST /api/uw-data-grouped/` - Create record
-- `DELETE /api/uw-data-grouped/{id}` - Delete record
-
-See [API Documentation](./docs/API.md) for complete details.
-
-## 🌐 Deployment
-
-The application can be deployed to:
-- **Frontend**: Vercel (recommended) or Netlify
-- **Backend**: Railway (recommended - no spin-down) or Fly.io or Render
-- **Database**: MongoDB Atlas (required for production)
-
-**Quick Deploy**: 
-- Railway: See [QUICK_DEPLOY_RAILWAY.md](./docs/QUICK_DEPLOY_RAILWAY.md) for 5-minute setup
-- Alternatives: See [DEPLOYMENT_ALTERNATIVES.md](./docs/DEPLOYMENT_ALTERNATIVES.md) for free hosting options
-
-**Detailed Guides**: 
-- [Railway Deployment](./docs/DEPLOYMENT_RAILWAY.md) - Recommended (no spin-down)
-- [Fly.io Deployment](./docs/DEPLOYMENT_FLYIO.md) - Alternative free hosting
-- [Render Deployment](./docs/DEPLOYMENT_RENDER.md) - Original setup (spins down on free tier)
-
-## 📝 License
-
-This project is private and proprietary.
-
-## 🤝 Contributing
-
-This is a private project. For issues or questions, please contact the project maintainer.
-
----
-
-Built with ❤️ for tracking Indonesian IPO underwriter performance
+The FastAPI backend, Vite frontend, and MongoDB scripts are archived. Use them only for reference; no further updates are planned.
 

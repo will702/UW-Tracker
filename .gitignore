@@ -57,6 +57,13 @@ frontend/.cache/
 backend/__pycache__/
 backend/**/__pycache__/
 backend/.pytest_cache/
+backend/serviceAccountKey.json
+backend/*serviceAccount*.json
+
+# Firebase Service Account (sensitive)
+**/serviceAccountKey.json
+**/*serviceAccount*.json
+react-native-expo/serviceAccountKey.json
 
 # Temporary files
 *.tmp
