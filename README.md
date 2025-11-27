@@ -1,16 +1,16 @@
 # UW Tracker
 
-Production-ready Expo (React Native + Web) application for tracking Indonesian IPO underwriter performance with Firebase as the primary data store.
+Production-ready Expo (React Native + Web) application plus a standalone Express/MongoDB API for tracking Indonesian IPO underwriter performance.
 
 ## Repository layout
 
 ```
 UW-Tracker/
-├── react-native-expo/        # Main app (Expo + TypeScript + Firebase)
-└── README.md
+├── react-native-expo/   # Expo client (mobile + web)
+└── backend/             # Express API (MongoDB)
 ```
 
-All legacy FastAPI/Vite code, MongoDB scripts, and data dumps were removed to keep the repository focused on the production Expo build.
+The two packages are independent—run and deploy each from its own directory.
 
 ## Getting started (Expo app)
 
@@ -26,7 +26,26 @@ All legacy FastAPI/Vite code, MongoDB scripts, and data dumps were removed to ke
    ```
 4. Choose `i` (iOS simulator), `a` (Android), or `w` (web) from the Expo CLI.
 
-Full instructions live in `react-native-expo/docs/QUICK_START.md`.
+Full instructions live in `react-native-expo/QUICK_START.md`.
+
+## Getting started (API)
+
+1. Install dependencies:
+   ```bash
+   cd backend
+   npm install
+   ```
+2. Copy `env.example` to `.env` and add your MongoDB credentials.
+3. Launch the server:
+   ```bash
+   npm run dev
+   ```
+4. Deploy with Vercel:
+   ```bash
+   vercel deploy --prod
+   ```
+
+See `backend/README.md` for more details.
 
 ## Documentation
 
@@ -39,12 +58,8 @@ Full instructions live in `react-native-expo/docs/QUICK_START.md`.
 
 ## Production readiness
 
-- Offline-capable Expo application with Firestore caching.
-- Direct database access from the client (no dedicated API server required).
+- Expo application consumes the hosted Express API (configure `EXPO_PUBLIC_API_URL`).
+- Backend exposes `/api/health`, `/api/records`, `/api/stats`, and `/api/records` (POST) endpoints.
 - EAS build profiles configured for iOS and Android.
 - Web export (`npm run build:web`) ready for static hosting (Vercel, Firebase Hosting, Netlify, etc.).
-
-## Legacy components
-
-The FastAPI backend, Vite frontend, and MongoDB scripts are archived. Use them only for reference; no further updates are planned.
 

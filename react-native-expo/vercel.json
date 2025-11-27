@@ -2,9 +2,9 @@
   "version": 2,
   "buildCommand": "npm run build:web",
   "outputDirectory": "dist",
-  "devCommand": "expo start --web",
   "installCommand": "npm install",
   "framework": null,
+  "devCommand": null,
   "rewrites": [
     {
       "source": "/(.*)",
