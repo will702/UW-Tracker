@@ -1,0 +1,26 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Run linting and formatting checks before commit
+echo "Running pre-commit checks..."
+
+# Check if we're in backend or frontend directory
+if [ -f "package.json" ]; then
+  # Check if lint script exists
+  if npm run | grep -q "lint"; then
+    echo "Running linter..."
+    npm run lint
+  fi
+
+  # Check if format:check script exists
+  if npm run | grep -q "format:check"; then
+    echo "Checking code formatting..."
+    npm run format:check || {
+      echo "❌ Code formatting check failed. Run 'npm run format' to fix."
+      exit 1
+    }
+  fi
+fi
+
+echo "✅ Pre-commit checks passed!"
+

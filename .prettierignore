@@ -1,0 +1,55 @@
+# Dependencies
+node_modules/
+**/node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+.vercel/
+.expo/
+web-build/
+
+# Generated files
+*.min.js
+*.min.css
+coverage/
+.nyc_output/
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Lock files
+package-lock.json
+yarn.lock
+
+# Android
+*.apk
+*.aab
+*.keystore
+
+# iOS
+Pods/
+*.xcworkspace
+xcuserdata/
+
+# Gradle
+.gradle/
+**/build/
+
+# TypeScript build info
+*.tsbuildinfo
+
