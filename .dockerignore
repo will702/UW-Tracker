@@ -1,0 +1,65 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Testing
+coverage/
+.nyc_output/
+
+# Logs
+*.log
+logs/
+
+# Expo
+.expo/
+.expo-shared/
+web-build/
+
+# EAS
+.eas/
+
+# Android
+*.apk
+*.aab
+*.keystore
+!**/debug.keystore
+
+# iOS
+Pods/
+*.xcworkspace
+xcuserdata/
+
+# Gradle
+.gradle/
+**/build/
+
+# Vercel
+.vercel/
+

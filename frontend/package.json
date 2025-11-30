@@ -7,10 +7,15 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "build:web": "expo export --platform web"
+    "build:web": "expo export --platform web",
+    "lint": "eslint . --ext .ts,.tsx",
+    "lint:fix": "eslint . --ext .ts,.tsx --fix",
+    "type-check": "tsc --noEmit",
+    "format": "prettier --write \"**/*.{ts,tsx,json,js}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,json,js}\""
   },
   "dependencies": {
-    "@react-native-async-storage/async-storage": "2.2.0",
+    "@react-native-async-storage/async-storage": "^2.2.0",
     "@react-navigation/bottom-tabs": "^6.5.11",
     "@react-navigation/native": "^6.1.9",
     "@react-navigation/stack": "^6.3.20",
@@ -34,18 +39,27 @@
   "devDependencies": {
     "@types/node": "^24.10.1",
     "@types/react": "~19.1.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
     "buffer": "^6.0.3",
-    "concurrently": "^9.2.1",
     "crypto-browserify": "^3.12.1",
+    "eslint": "^8.57.0",
+    "eslint-config-expo": "^7.1.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
     "events": "^3.3.0",
     "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",
+    "prettier": "^3.2.5",
     "process": "^0.11.10",
     "stream-browserify": "^3.0.0",
     "tsx": "^4.20.6",
     "typescript": "~5.9.2",
-    "util": "^0.12.5",
-    "webpack": "^5.103.0"
+    "util": "^0.12.5"
+  },
+  "overrides": {
+    "react-native": "0.81.5"
   },
   "private": true
 }
