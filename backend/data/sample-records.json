@@ -1,0 +1,23 @@
+[
+  {
+    "code": "ABC",
+    "companyName": "Alpha Beta Corp",
+    "underwriters": ["GOLDMAN", "MORGAN"],
+    "ipoPrice": 15.5,
+    "listingBoard": "NASDAQ",
+    "listingDate": "2024-01-15T00:00:00.000Z",
+    "returnD1": 0.12,
+    "record": "Sample IPO performance"
+  },
+  {
+    "code": "XYZ",
+    "companyName": "Xylo Zen Labs",
+    "underwriters": ["BARCLAYS"],
+    "ipoPrice": 22,
+    "listingBoard": "NYSE",
+    "listingDate": "2023-11-03T00:00:00.000Z",
+    "returnD1": -0.05,
+    "record": "Second sample row"
+  }
+]
+
